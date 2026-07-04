@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+vibesec-report.md
+vibesec-fixes/
+
+# Real env files must never be committed. The fixture .env below is a
+# deliberately fake test vector for the committed-env rule.
+.env
+.env.*
+!.env.example
+!vibesec/test/fixtures/vulnerable-app/.env
