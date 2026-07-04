@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Earworm — hum a melody, get sheet music</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <h1>ear<span class="accent">worm</span></h1>
+        <p class="tagline">hum it before you lose it — melody in, sheet music out. Nothing leaves your browser.</p>
+      </header>
+
+      <section class="capture-panel">
+        <button id="record-btn" class="big-btn">● Record</button>
+        <div id="live-pitch" class="live-pitch" hidden>
+          <span id="live-note" class="live-note">—</span>
+          <canvas id="live-trace" width="600" height="80"></canvas>
+        </div>
+        <label class="upload-label" for="file-input">
+          …or drop / choose an audio file
+          <input id="file-input" type="file" accept="audio/*" data-testid="file-input" />
+        </label>
+      </section>
+
+      <section id="result" class="result" hidden>
+        <div class="result-meta">
+          <span id="meta-key" class="chip" data-testid="meta-key"></span>
+          <label class="chip bpm-chip">♩ = <input id="bpm-input" type="number" min="40" max="240" data-testid="bpm-input" /> bpm</label>
+          <label class="chip toggle-chip"><input id="quantize-toggle" type="checkbox" checked /> snap to grid</label>
+          <span class="spacer"></span>
+          <button id="play-btn" class="btn" data-testid="play-btn">▶ Play</button>
+          <button id="midi-btn" class="btn" data-testid="midi-btn">↓ MIDI</button>
+          <button id="wav-btn" class="btn" data-testid="wav-btn">↓ WAV</button>
+        </div>
+        <div id="score" class="score" data-testid="score"></div>
+        <div class="roll-wrap">
+          <div class="roll-hint">piano roll — drag notes up/down to fix pitch, drag right edge for length, double-click to delete</div>
+          <canvas id="pianoroll" data-testid="pianoroll"></canvas>
+        </div>
+        <div id="note-list" class="note-list" data-testid="note-list"></div>
+      </section>
+
+      <footer class="foot">
+        <span>All processing is local: YIN pitch detection + note segmentation in TypeScript.</span>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
