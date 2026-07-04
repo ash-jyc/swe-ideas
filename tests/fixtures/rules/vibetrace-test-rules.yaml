@@ -1,0 +1,63 @@
+rules:
+  - id: vibetrace-test.python-eval
+    languages: [python]
+    severity: ERROR
+    message: Detected use of eval() on possibly user-controlled input; arbitrary code execution.
+    patterns:
+      - pattern: eval(...)
+    metadata:
+      # string form on purpose: exercises str->list CWE normalization
+      cwe: "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: HIGH
+      category: security
+
+  - id: vibetrace-test.subprocess-shell-true
+    languages: [python]
+    severity: ERROR
+    message: subprocess call with shell=True and dynamic input; command injection risk.
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.check_output($CMD + $X, shell=True, ...)
+          - pattern: subprocess.run($CMD + $X, shell=True, ...)
+          - pattern: subprocess.call($CMD + $X, shell=True, ...)
+          - pattern: subprocess.Popen($CMD + $X, shell=True, ...)
+    metadata:
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: HIGH
+      category: security
+
+  - id: vibetrace-test.sql-string-concat
+    languages: [python]
+    severity: WARNING
+    message: SQL query built by string concatenation; SQL injection risk.
+    patterns:
+      - pattern-either:
+          - pattern: |
+              $Q = "..." + $X + "..."
+              ...
+              $CONN.execute($Q)
+          - pattern: $CONN.execute("..." + $X + "...")
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"
+      owasp:
+        - "A03:2021 - Injection"
+      confidence: MEDIUM
+      category: security
+
+  - id: vibetrace-test.flask-debug-true
+    languages: [python]
+    severity: WARNING
+    message: Flask app run with debug=True; the Werkzeug debugger allows code execution.
+    patterns:
+      - pattern: $APP.run(..., debug=True, ...)
+    metadata:
+      cwe:
+        - "CWE-489: Active Debug Code"
+      confidence: HIGH
+      category: security

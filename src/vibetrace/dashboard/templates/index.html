@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}vibetrace — sessions{% endblock %}
+{% block content %}
+<h1>Overview</h1>
+<div class="tiles">
+  <div class="tile"><div class="tile-value">{{ overview.prompts }}</div><div class="tile-label">prompts</div></div>
+  <div class="tile"><div class="tile-value">{{ overview.code_changes }}</div><div class="tile-label">code changes</div></div>
+  <div class="tile"><div class="tile-value">{{ overview.findings }}</div><div class="tile-label">findings</div></div>
+  <div class="tile"><div class="tile-value">{{ overview.new_findings }}</div><div class="tile-label">new findings</div></div>
+  <div class="tile {% if overview.pending_scans %}tile-warn{% endif %}">
+    <div class="tile-value">{{ overview.pending_scans }}</div><div class="tile-label">scans pending</div>
+  </div>
+</div>
+{% if overview.pending_scans %}
+<p class="notice">Scans are still pending — security counts below are incomplete.
+Run <code>vibetrace scan --drain</code> to settle the data.</p>
+{% endif %}
+{% if overview.error_scans %}
+<p class="notice">{{ overview.error_scans }} scan(s) errored — see <code>vibetrace status</code> / worker.log.</p>
+{% endif %}
+
+<h1>Sessions</h1>
+{% if sessions %}
+<table class="data">
+  <thead><tr><th>Session</th><th>Started</th><th>Source</th><th>Prompts</th><th>Changes</th><th>New findings</th></tr></thead>
+  <tbody>
+  {% for s in sessions %}
+    <tr>
+      <td><a href="{{ url_for('session_view', session_id=s.id) }}"><code>{{ s.id|shortsha }}</code></a></td>
+      <td>{{ s.started_at or "—" }}</td>
+      <td>{{ s.start_source or "—" }}</td>
+      <td>{{ s.n_prompts }}</td>
+      <td>{{ s.n_changes }}</td>
+      <td>{% if s.n_new_findings %}<span class="badge badge-new">{{ s.n_new_findings }}</span>{% else %}0{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="vt-empty">No sessions captured yet. Run <code>vibetrace init</code> in a project,
+then start a Claude Code session there.</p>
+{% endif %}
+{% endblock %}

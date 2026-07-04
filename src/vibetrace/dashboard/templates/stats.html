@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}vibetrace — stats{% endblock %}
+{% block content %}
+<h1>Prompt traits × security outcomes</h1>
+<p class="meta-line">{{ n_prompts }} prompt(s) ·
+  outcome = Semgrep findings newly introduced by the code changes attributed to each prompt</p>
+{% if overview.pending_scans %}
+<p class="notice">{{ overview.pending_scans }} scan(s) pending — these numbers are not final.
+Run <code>vibetrace scan --drain</code>.</p>
+{% endif %}
+
+{{ chart_splits|safe }}
+
+<h2>Feature ↔ outcome table</h2>
+<table class="data">
+  <thead>
+    <tr><th>Prompt trait</th><th>n with</th><th>n without</th>
+        <th>mean new findings (with)</th><th>mean new findings (without)</th>
+        <th>point-biserial r</th></tr>
+  </thead>
+  <tbody>
+  {% for row in feature_table %}
+    <tr>
+      <td>{{ row.label }} <code class="meta-line">{{ row.column }}</code></td>
+      <td>{{ row.n_present }}</td>
+      <td>{{ row.n_absent }}</td>
+      <td>{{ row.mean_new_present if row.mean_new_present is not none else "—" }}</td>
+      <td>{{ row.mean_new_absent if row.mean_new_absent is not none else "—" }}</td>
+      <td>{{ row.r if row.r is not none else "—" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="meta-line">r is a descriptive effect-size proxy, not a causal claim; small n makes it unstable.
+Export <a href="{{ url_for('export_flat') }}">flat.csv</a> for real analysis.</p>
+
+{{ chart_length|safe }}
+{{ chart_severity|safe }}
+{{ chart_rules|safe }}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}session {{ session.id[:10] }}{% endblock %}
+{% block content %}
+<h1>Session <code>{{ session.id|shortsha }}</code></h1>
+<p class="meta-line">
+  {{ session.project_dir or "" }} · started {{ session.started_at or "?" }}
+  {% if session.ended_at %} · ended {{ session.ended_at }}{% endif %}
+  {% if session.model %} · {{ session.model }}{% endif %}
+</p>
+
+{% for entry in timeline %}
+<section class="turn">
+  {% if entry.prompt %}
+  <div class="prompt-card">
+    <div class="prompt-head">
+      <a href="{{ url_for('prompt_view', prompt_id=entry.prompt.id) }}">#{{ entry.prompt.seq }}</a>
+      <span class="ts">{{ entry.prompt.ts }}</span>
+      {% if entry.prompt.feat_mentions_security %}<span class="badge">mentions security</span>{% endif %}
+      {% if entry.prompt.feat_vague_term_count %}<span class="badge badge-vague">vague ×{{ entry.prompt.feat_vague_term_count }}</span>{% endif %}
+      {% if entry.prompt.feat_urgency_shortcut %}<span class="badge badge-vague">urgency</span>{% endif %}
+    </div>
+    <blockquote class="prompt-text">{{ entry.prompt.prompt_text }}</blockquote>
+  </div>
+  {% else %}
+  <div class="prompt-card"><em>Changes not attributable to a recorded prompt</em></div>
+  {% endif %}
+
+  {% for item in entry.changes %}
+  <div class="change-card">
+    <div class="change-head">
+      <a href="{{ url_for('change_view', change_id=item.change.id) }}">{{ item.change.tool_name }}</a>
+      <code>{{ item.change.file_path }}</code>
+      <span class="ts">{{ item.change.ts }}</span>
+      {% if item.scan %}
+        <span class="scan-status scan-{{ item.scan.status }}">{{ item.scan.status }}</span>
+      {% else %}
+        <span class="scan-status">no scan</span>
+      {% endif %}
+    </div>
+    {% if item.findings %}
+    <ul class="findings">
+      {% for f in item.findings %}
+      <li>
+        {% if f.is_new == 1 %}<span class="badge badge-new">NEW</span>{% endif %}
+        <span class="sev sev-{{ (f.severity or 'INFO')|lower }}">{{ f.severity or "?" }}</span>
+        <code>{{ f.rule_id }}</code>
+        line {{ f.start_line }} — {{ f.message }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% else %}
+<p class="vt-empty">Nothing captured in this session yet.</p>
+{% endfor %}
+{% endblock %}

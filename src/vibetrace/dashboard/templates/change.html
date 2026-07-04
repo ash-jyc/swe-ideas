@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}change #{{ change.id }}{% endblock %}
+{% block content %}
+<h1>{{ change.tool_name }} <code>{{ change.file_path }}</code></h1>
+<p class="meta-line">
+  session <a href="{{ url_for('session_view', session_id=change.session_id) }}"><code>{{ change.session_id|shortsha }}</code></a>
+  {% if change.prompt_id %} · prompt <a href="{{ url_for('prompt_view', prompt_id=change.prompt_id) }}">#{{ change.prompt_id }}</a>{% endif %}
+  · {{ change.ts }}
+  · before <code>{{ change.before_sha256|shortsha or "∅ (new file)" }}</code>
+  · after <code>{{ change.after_sha256|shortsha }}</code>
+</p>
+
+<h2>Security findings (after content)</h2>
+{% if findings %}
+<ul class="findings">
+  {% for f in findings %}
+  <li>
+    {% if f.is_new == 1 %}<span class="badge badge-new">NEW</span>
+    {% elif f.is_new == 0 %}<span class="badge">pre-existing</span>
+    {% else %}<span class="badge">unknown</span>{% endif %}
+    <span class="sev sev-{{ (f.severity or 'INFO')|lower }}">{{ f.severity or "?" }}</span>
+    <code>{{ f.rule_id }}</code>
+    lines {{ f.start_line }}–{{ f.end_line }} — {{ f.message }}
+    {% if f.snippet %}<pre class="snippet">{{ f.snippet }}</pre>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% elif scan and scan.status in ('queued', 'running') %}
+<p class="notice">Scan still {{ scan.status }} — run <code>vibetrace scan --drain</code>.</p>
+{% elif scan and scan.status == 'error' %}
+<p class="notice">Scan failed: {{ scan.error_text }}</p>
+{% elif scan and scan.status == 'skipped_unsupported' %}
+<p class="vt-empty">File type not supported by the scanner (recorded as skipped).</p>
+{% else %}
+<p class="vt-empty">No findings.</p>
+{% endif %}
+
+<h2>Diff</h2>
+{% if diff %}
+<pre class="diff">{% for line in diff %}<span class="{% if line.startswith('+') %}diff-add{% elif line.startswith('-') %}diff-del{% elif line.startswith('@@') %}diff-hunk{% endif %}">{{ line }}</span>
+{% endfor %}</pre>
+{% else %}
+<p class="vt-empty">No before/after content available
+  {%- if not before_text and after_text %} (new file — see full content below){% endif %}.</p>
+{% if after_text %}<pre class="diff">{{ after_text }}</pre>{% endif %}
+{% endif %}
+{% endblock %}

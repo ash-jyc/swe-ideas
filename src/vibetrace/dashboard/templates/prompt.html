@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}prompt #{{ prompt.seq }}{% endblock %}
+{% block content %}
+<h1>Prompt #{{ prompt.seq }}
+  <small class="meta-line">session
+    <a href="{{ url_for('session_view', session_id=prompt.session_id) }}"><code>{{ prompt.session_id|shortsha }}</code></a>
+    · {{ prompt.ts }}</small>
+</h1>
+<blockquote class="prompt-text full">{{ prompt.prompt_text }}</blockquote>
+
+<h2>Extracted features <small class="meta-line">v{{ prompt.features_version }}</small></h2>
+<table class="data narrow">
+  <thead><tr><th>Feature</th><th>Value</th></tr></thead>
+  <tbody>
+  {% for name, value in features %}
+    <tr><td><code>{{ name }}</code></td><td>{{ value }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Code changes attributed to this prompt</h2>
+{% for item in changes %}
+<div class="change-card">
+  <div class="change-head">
+    <a href="{{ url_for('change_view', change_id=item.change.id) }}">{{ item.change.tool_name }}</a>
+    <code>{{ item.change.file_path }}</code>
+    {% if item.scan %}<span class="scan-status scan-{{ item.scan.status }}">{{ item.scan.status }}</span>{% endif %}
+  </div>
+  {% if item.findings %}
+  <ul class="findings">
+    {% for f in item.findings %}
+    <li>
+      {% if f.is_new == 1 %}<span class="badge badge-new">NEW</span>{% endif %}
+      <span class="sev sev-{{ (f.severity or 'INFO')|lower }}">{{ f.severity or "?" }}</span>
+      <code>{{ f.rule_id }}</code> line {{ f.start_line }} — {{ f.message }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% else %}
+<p class="vt-empty">No code changes attributed to this prompt.</p>
+{% endfor %}
+{% endblock %}
