@@ -5,7 +5,7 @@ import { labelTexture } from './textTexture'
 
 const TILE_COLOR: Record<SpaceType, string> = {
   START: '#38bdf8',
-  EVENT: '#f59e0b',
+  EVENT: '#f1f5f9', // cream "plain" spaces — the colored ones are the special ones
   PAYDAY: '#22c55e',
   TAX: '#64748b',
   GAMBLE: '#c026d3',
@@ -93,10 +93,42 @@ function SignPost({ text }: { text: string }) {
   )
 }
 
+/** Flat stepping-stones between consecutive tiles so the path reads as a road. */
+function Connectors() {
+  const stones = useMemo(() => {
+    const out: { pos: [number, number, number]; key: string }[] = []
+    for (const s of SPACES) {
+      for (const n of s.next) {
+        const b = SPACES[n]
+        out.push({
+          key: `${s.id}-${n}`,
+          pos: [
+            (s.pos[0] + b.pos[0]) / 2,
+            (s.pos[1] + b.pos[1]) / 2 + 0.08,
+            (s.pos[2] + b.pos[2]) / 2,
+          ],
+        })
+      }
+    }
+    return out
+  }, [])
+  return (
+    <group>
+      {stones.map((st) => (
+        <mesh key={st.key} position={st.pos} receiveShadow>
+          <cylinderGeometry args={[0.65, 0.75, 0.16, 10]} />
+          <meshStandardMaterial color="#3f4f63" />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
 export default function Board() {
   const tiles = useMemo(() => SPACES, [])
   return (
     <group>
+      <Connectors />
       {tiles.map((s) => (
         <Tile key={s.id} s={s} />
       ))}
