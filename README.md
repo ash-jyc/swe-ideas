@@ -41,8 +41,45 @@ Production (single server serves everything):
 
 ```bash
 npm run build
-npm start          # http://localhost:3001
+npm start          # http://localhost:3001 (respects PORT)
 ```
+
+## Deploying (so friends can join from anywhere)
+
+The whole game is one Node server (HTTP + WebSockets). Deploy it anywhere that runs a
+long-lived Node process, share the URL, and friends join with the 4-letter room code.
+
+**Render (free, easiest)** — this repo ships a `render.yaml` blueprint:
+1. Push the repo to GitHub.
+2. On [render.com](https://render.com): *New → Blueprint*, pick the repo, deploy.
+   (Or *New → Web Service* with build `npm install && npm run build`, start `npm start`.)
+3. Share the `https://….onrender.com` URL.
+
+Free-tier note: the service sleeps after ~15 idle minutes, so the first visitor waits
+~30–60s while it wakes. An in-progress game keeps it awake.
+
+**Railway / Fly.io / any Docker host** — a production `Dockerfile` is included:
+
+```bash
+docker build -t midlife-crisis .
+docker run -p 3001:3001 midlife-crisis
+```
+
+On Fly.io: `fly launch` detects the Dockerfile. On Railway: point it at the repo, done.
+
+**Play tonight without deploying** — run it locally and tunnel:
+
+```bash
+npm run build && npm start
+# in another terminal (pick one):
+cloudflared tunnel --url http://localhost:3001   # free, no account
+npx ngrok http 3001                              # needs a free ngrok account
+```
+
+Share the generated `https://` URL with your friends.
+
+⚠️ Rooms live in server memory: run **one instance** (no horizontal scaling), and know
+that a server restart/redeploy drops games in progress.
 
 ## Development
 

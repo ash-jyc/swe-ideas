@@ -1,0 +1,11 @@
+# One-click Render.com blueprint (free tier works).
+# New > Blueprint > point it at this repo, or create a Web Service manually
+# with the same build/start commands.
+services:
+  - type: web
+    name: midlife-crisis
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
