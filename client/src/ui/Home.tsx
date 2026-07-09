@@ -44,6 +44,7 @@ export default function Home() {
             className="code-input"
             value={code}
             maxLength={4}
+            size={4}
             placeholder="CODE"
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             data-testid="code-input"

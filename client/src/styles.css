@@ -159,6 +159,9 @@ button:disabled {
 }
 .code-input {
   flex: 1;
+  /* inputs have a big intrinsic min-width; without this the flex row
+     overflows on phones and shoves the Join button off-screen */
+  min-width: 0;
   text-transform: uppercase;
   letter-spacing: 10px;
   font-weight: 800;
@@ -676,4 +679,107 @@ button:disabled {
   max-width: 320px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   animation: banner-pop 0.2s ease;
+}
+
+/* ---------------------------------------------------------------- mobile */
+
+@media (max-width: 640px) {
+  .home-card {
+    padding: 26px 20px;
+  }
+  .logo {
+    font-size: 32px;
+  }
+  .logo-accent {
+    font-size: 37px;
+  }
+  .room-code {
+    font-size: 42px;
+    letter-spacing: 10px;
+  }
+  .code-input {
+    letter-spacing: 6px;
+    font-size: 18px;
+  }
+
+  .hud-top-left {
+    top: 8px;
+    left: 8px;
+  }
+  .hud-room {
+    font-size: 11px;
+    padding: 5px 9px;
+  }
+  .hud-players {
+    top: 96px;
+    width: 172px;
+    gap: 6px;
+  }
+  .player-panel {
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+  .pp-cash {
+    font-size: 15px;
+  }
+  .pp-name {
+    font-size: 12px;
+  }
+
+  .hud-banner {
+    top: 44px;
+    font-size: 13px;
+    padding: 8px 14px;
+    white-space: normal;
+    max-width: 88vw;
+    text-align: center;
+  }
+  .hud-bottom {
+    bottom: 12px;
+    width: 100vw;
+  }
+  .hud-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .btn-spin {
+    font-size: 19px;
+    padding: 13px 34px;
+  }
+  .btn-loan {
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+
+  .choice-dock {
+    bottom: 12px;
+    width: 96vw;
+  }
+  .choice-panel {
+    padding: 12px 12px;
+    max-height: 62vh;
+    overflow-y: auto;
+  }
+  .choice-prompt {
+    font-size: 15px;
+  }
+  .choice-option {
+    flex-basis: 100%;
+    max-width: none;
+    padding: 10px 12px;
+  }
+
+  .event-card {
+    padding: 20px 18px 14px;
+  }
+  .event-card-title {
+    font-size: 21px;
+  }
+  .event-card-flavor {
+    font-size: 14px;
+  }
+
+  .gameover-panel {
+    padding: 22px 18px;
+  }
 }
