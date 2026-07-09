@@ -46,6 +46,13 @@ function Tile({ s }: { s: Space }) {
 
   return (
     <group position={[x, y, z]} rotation={[0, yaw, 0]}>
+      {/* support pillar for elevated skyway tiles */}
+      {y > 0.8 && (
+        <mesh position={[0, -y / 2 + 0.05, 0]} castShadow>
+          <cylinderGeometry args={[0.38, 0.5, y + 0.1, 8]} />
+          <meshStandardMaterial color="#475569" />
+        </mesh>
+      )}
       {/* dark base / border */}
       <mesh position={[0, 0.15, 0]} receiveShadow>
         <boxGeometry args={[size + 0.35, 0.3, size + 0.35]} />

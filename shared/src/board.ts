@@ -195,14 +195,17 @@ const SEGMENTS: SegmentDef[] = [
     babies: { 11: 2 },
   },
   {
+    // The final stretch is an elevated skyway: it climbs quickly, crosses the
+    // casino strip once at ~y5 (a proper overpass on pillars), then descends
+    // the far side to the retirement plateau.
     name: 'mainD',
     branch: 'main',
     pts: [
-      [46, 0, -1],
-      [44, 0.8, -8],
-      [38, 1.8, -13],
-      [33, 2.8, -18],
-      [28, 3.5, -22],
+      [46, 0.8, -1],
+      [40, 3.5, -4],
+      [35, 5, -9],
+      [30, 5.6, -15],
+      [28, 6.2, -22],
     ],
     types: [E, P, 'STOP_HOUSE', E, 'TAX', E, P, 'BABY', E, 'CRASH', P, 'RETIREMENT'],
     labels: { 2: 'REAL ESTATE DAY', 11: 'RETIREMENT' },

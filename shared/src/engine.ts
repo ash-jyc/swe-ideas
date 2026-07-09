@@ -28,6 +28,7 @@ export const KID_BONUS = 10_000
 export const BABY_GIFT = 1_000
 export const PAYDAY_LANDING_MULT = 1.5
 export const GAMBLE_BETS = [5_000, 20_000, 50_000]
+export const ALL_IN_MIN = 20_000 // broke players can still ruin themselves
 export const GAMBLE_WIN_THRESHOLD = 7 // spin 7-10 wins (40%)
 export const GAMBLE_PROFIT_MULT = 1.5 // 2.5x total return
 export const LOTTERY_SMALL = 2_000
@@ -353,9 +354,12 @@ function resolveLanding(s: GameState, ev: GameEvent[], p: PlayerState, rng: Rng)
       }
       return
     }
-    case 'TAX':
-      addCash(s, ev, p, -TAX_AMOUNT, 'The IRS always finds you')
+    case 'TAX': {
+      // progressive-ish: 10% of cash, floor of the flat amount. Success is taxable.
+      const owed = Math.max(TAX_AMOUNT, Math.round((p.cash * 0.1) / 1000) * 1000)
+      addCash(s, ev, p, -owed, owed > TAX_AMOUNT ? 'The IRS noticed you doing well' : 'The IRS always finds you')
       return
+    }
     case 'GAMBLE':
       setPending(s, ev, {
         kind: 'gamble',
@@ -366,6 +370,11 @@ function resolveLanding(s: GameState, ev: GameEvent[], p: PlayerState, rng: Rng)
           { id: 'bet5', label: `Bet ${fmtK(GAMBLE_BETS[0])}`, detail: `Win ${fmtK(GAMBLE_BETS[0] * GAMBLE_PROFIT_MULT)} profit on 7+` },
           { id: 'bet20', label: `Bet ${fmtK(GAMBLE_BETS[1])}`, detail: `Win ${fmtK(GAMBLE_BETS[1] * GAMBLE_PROFIT_MULT)} profit on 7+` },
           { id: 'bet50', label: `Bet ${fmtK(GAMBLE_BETS[2])} 🔥`, detail: `High roller. Win ${fmtK(GAMBLE_BETS[2] * GAMBLE_PROFIT_MULT)} profit on 7+ — the bank will happily lend you the loss.` },
+          {
+            id: 'allin',
+            label: 'ALL IN 🔥🔥🔥',
+            detail: `Bet everything you have (${fmtK(Math.max(p.cash, ALL_IN_MIN))}). Win 1.5x profit on 7+, or hand the casino your entire life.`,
+          },
         ],
       })
       return
@@ -526,6 +535,10 @@ function applyEffect(
     ev.push({ type: 'loan', playerId: p.id, cash: 0, debt: eff.debt, auto: false })
   }
   if (eff.cash) addCash(s, ev, p, eff.cash, reason)
+  if (eff.cashPct && p.cash > 0) {
+    const delta = Math.round((p.cash * eff.cashPct) / 100 / 1000) * 1000
+    if (delta !== 0) addCash(s, ev, p, delta, reason)
+  }
   if (eff.cashPerKid && p.kids > 0) addCash(s, ev, p, eff.cashPerKid * p.kids, reason)
   if (eff.collectFromEach) {
     let total = 0
@@ -570,6 +583,14 @@ function applyEffect(
     const won = rng() < 0.5
     const delta = won ? eff.gamble.win : -eff.gamble.lose
     addCash(s, ev, p, delta, won ? `${reason} — it paid off!` : `${reason} — it did not pay off`)
+  }
+  if (eff.gamblePct && p.cash > 0) {
+    const won = rng() < 0.5
+    const pct = won ? eff.gamblePct.win : -eff.gamblePct.lose
+    const delta = Math.round((p.cash * pct) / 100 / 1000) * 1000
+    if (delta !== 0) {
+      addCash(s, ev, p, delta, won ? `${reason} — the voice was right??` : `${reason} — the voice lied`)
+    }
   }
   if (eff.move) {
     if (eff.move > 0) walk(s, ev, p, eff.move, rng)
@@ -664,7 +685,13 @@ function resolveChoice(s: GameState, ev: GameEvent[], p: PlayerState, optionId: 
     case 'gamble': {
       if (optionId !== 'skip') {
         const bet =
-          optionId === 'bet5' ? GAMBLE_BETS[0] : optionId === 'bet20' ? GAMBLE_BETS[1] : GAMBLE_BETS[2]
+          optionId === 'allin'
+            ? Math.max(p.cash, ALL_IN_MIN)
+            : optionId === 'bet5'
+              ? GAMBLE_BETS[0]
+              : optionId === 'bet20'
+                ? GAMBLE_BETS[1]
+                : GAMBLE_BETS[2]
         const roll = 1 + Math.floor(rng() * 10)
         const won = roll >= GAMBLE_WIN_THRESHOLD
         ev.push({ type: 'gamble', playerId: p.id, bet, roll, won })

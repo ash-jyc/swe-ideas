@@ -452,6 +452,7 @@ function Streetlamps() {
       const s = SPACES[i]
       const n = s.next[0]
       if (n === undefined) continue
+      if (s.pos[1] > 0.8) continue // no floating lamps beside the skyway
       const b = SPACES[n]
       const dx = b.pos[0] - s.pos[0]
       const dz = b.pos[2] - s.pos[2]

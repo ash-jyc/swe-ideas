@@ -18,6 +18,8 @@ export function describeEffect(e: CardEffect | undefined): string[] {
   if (!e) return []
   const out: string[] = []
   if (e.cash) out.push(k(e.cash))
+  if (e.cashPct) out.push(`${e.cashPct > 0 ? '+' : ''}${e.cashPct}% of your cash`)
+  if (e.gamblePct) out.push(`Coin flip: win ${e.gamblePct.win}% or lose ${e.gamblePct.lose}% of your cash`)
   if (e.cashPerKid) out.push(`${k(e.cashPerKid)} per kid`)
   if (e.salaryPct) out.push(`Salary ${e.salaryPct > 0 ? '+' : ''}${e.salaryPct}%`)
   if (e.debt) out.push(e.debt > 0 ? `+$${(e.debt / 1000).toFixed(0)}k debt` : `-$${(-e.debt / 1000).toFixed(0)}k debt`)
@@ -29,6 +31,8 @@ export function describeEffect(e: CardEffect | undefined): string[] {
   if (e.insurance) out.push('Gain car insurance 🛡️')
   if (e.newCareer) out.push('Forced career change 💼')
   if (e.gamble) out.push(`Coin flip: win $${(e.gamble.win / 1000).toFixed(0)}k or lose $${(e.gamble.lose / 1000).toFixed(0)}k`)
+  if (e.collectFromEach) out.push(`Every player pays YOU $${(e.collectFromEach / 1000).toFixed(1).replace('.0', '')}k`)
+  if (e.payToEach) out.push(`You pay EVERY player $${(e.payToEach / 1000).toFixed(1).replace('.0', '')}k`)
   if (out.length === 0) out.push('Nothing happens. Somehow that’s worse.')
   return out
 }

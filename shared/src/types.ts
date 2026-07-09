@@ -86,6 +86,8 @@ export type CardRequires =
 
 export interface CardEffect {
   cash?: number
+  /** Percent of CURRENT cash gained/lost (e.g. -40 = lose 40%). Scales with wealth. */
+  cashPct?: number
   cashPerKid?: number
   /** Percentage change to salary, e.g. 20 = +20%, -10 = -10%. */
   salaryPct?: number
@@ -107,6 +109,8 @@ export interface CardEffect {
   payToEach?: number
   /** 50/50 coin flip resolved by the engine. */
   gamble?: { win: number; lose: number }
+  /** 50/50 coin flip over a PERCENT of current cash (e.g. {win:50, lose:50}). */
+  gamblePct?: { win: number; lose: number }
 }
 
 export interface CardChoiceOption {

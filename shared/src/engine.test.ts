@@ -505,6 +505,64 @@ describe('v2 mechanics', () => {
     expect(drawn2.type === 'card' && drawn2.cardId).toBe('alimony')
   })
 
+  it('tax space takes 10% from the rich, flat amount from the poor', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const tax = SPACES.find(
+      (sp) => sp.type === 'TAX' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    let s = playerBefore(g, 'p1', tax.id)
+    s.players[0].cash = 500_000
+    const rich = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(rich.state.players[0].cash).toBe(450_000)
+    let s2 = playerBefore(g, 'p1', tax.id)
+    s2.players[0].cash = 30_000
+    const poor = applyAction(s2, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(poor.state.players[0].cash).toBe(20_000)
+  })
+
+  it('ALL IN bets the entire stack', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const gamble = SPACES.find(
+      (sp) => sp.type === 'GAMBLE' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    let s = playerBefore(g, 'p1', gamble.id)
+    s.players[0].cash = 200_000
+    const r1 = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(r1.state.pending?.options.some((o) => o.id === 'allin')).toBe(true)
+    // lose: roll 3 → entire 200k gone
+    const bust = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'allin' }, seqRng([forSpin(3)]))
+    expect(bust.state.players[0].cash).toBe(0)
+    // win: roll 9 → +300k profit
+    const hit = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'allin' }, seqRng([forSpin(9)]))
+    expect(hit.state.players[0].cash).toBe(500_000)
+  })
+
+  it('cashPct disasters scale with wealth', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const idx = g.deck.indexOf('market-meltdown')
+    ;[g.deck[0], g.deck[idx]] = [g.deck[idx], g.deck[0]]
+    const evt = SPACES.find(
+      (sp) => sp.type === 'EVENT' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    let s = playerBefore(g, 'p1', evt.id)
+    s.players[0].cash = 1_000_000
+    const { state } = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(state.players[0].cash).toBe(650_000)
+  })
+
+  it('collectFromEach moves money between players', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const idx = g.deck.indexOf('superbowl-squares')
+    ;[g.deck[0], g.deck[idx]] = [g.deck[idx], g.deck[0]]
+    const evt = SPACES.find(
+      (sp) => sp.type === 'EVENT' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    const s = playerBefore(g, 'p1', evt.id)
+    const { state } = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(state.players[0].cash).toBe(START_CASH + 3_000)
+    expect(state.players[1].cash).toBe(START_CASH - 3_000)
+  })
+
   it('marriage clears the divorced flag', () => {
     const g = initGame(PLAYERS, mulberry32(42))
     const chapel = SPACES.find((sp) => sp.type === 'STOP_MARRIAGE')!
@@ -574,7 +632,9 @@ describe('full game simulation', () => {
       expect(state.phase).toBe('gameOver')
       for (const entry of state.ranking!) {
         expect(Number.isFinite(entry.netWorth)).toBe(true)
-        expect(Math.abs(entry.netWorth)).toBeLessThan(10_000_000)
+        // greedy sims now ALL IN at every casino, so wealth can compound wildly;
+        // this is a sanity bound, not a balance assertion
+        expect(Math.abs(entry.netWorth)).toBeLessThan(60_000_000)
       }
     }
   })

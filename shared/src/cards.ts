@@ -1375,6 +1375,149 @@ export const CARDS: EventCard[] = [
     flavor: "You 'covered it for points.' The points: 240. The order: $186. The Venmos: never coming.",
     effect: { cash: -2_000 },
   },
+
+  // =========================================================================
+  // ACTUAL CRISIS (v3.2): disasters that scale with your smugness
+  // =========================================================================
+  {
+    id: 'market-meltdown', category: 'money', title: 'Everything Is Down',
+    flavor: 'Stocks: down. Crypto: down. The "safe stuff": somehow the most down. Your advisor stopped answering.',
+    effect: { cashPct: -35 },
+  },
+  {
+    id: 'ponzi-book-club', category: 'money', title: 'The Book Club Fund',
+    flavor: "Guaranteed 2% weekly returns. You told your whole book club. Marcia's husband is 'handling it.' Marcia's husband is in Aruba.",
+    effect: { cashPct: -40 },
+  },
+  {
+    id: 'irs-double-audit', category: 'news', title: 'The Auditor Brought a Friend',
+    flavor: 'The IRS auditor arrived with a second auditor. They high-fived in your kitchen.',
+    effect: { cashPct: -25 },
+  },
+  {
+    id: 'lifestyle-creep', category: 'money', title: 'Lifestyle Creep',
+    flavor: 'You have a guy for everything now. The guys have guys. Everyone bills hourly. You cannot go back.',
+    effect: { cashPct: -20 },
+  },
+  {
+    id: 'midlife-lambo', category: 'vices', title: 'The Lambo Moment',
+    flavor: 'The dealer let you sit in it. The dealer knew exactly what he was doing.',
+    choice: {
+      prompt: 'This is the crisis the game is named after.',
+      options: [
+        { id: 'buy', label: 'Buy the Lambo (lose 30% of your cash)', effect: { cashPct: -30 } },
+        { id: 'therapy', label: 'Drive home in the Corolla, book therapy (-$5k)', effect: { cash: -5_000 } },
+      ],
+    },
+  },
+  {
+    id: 'yacht-week', category: 'vices', title: 'Yacht Week Invite',
+    flavor: "Someone from high school 'chartered a boat.' The buy-in is a mortgage payment. The photos would be incredible.",
+    choice: {
+      prompt: 'Croatia is calling.',
+      options: [
+        { id: 'board', label: 'Board the yacht (lose 25% of your cash)', effect: { cashPct: -25 } },
+        { id: 'flake', label: 'Flake at the marina (-$2k deposit)', effect: { cash: -2_000 } },
+      ],
+    },
+  },
+  {
+    id: 'startup-dream', category: 'career', title: 'The Startup Dream',
+    flavor: "You have an idea. It's 'Uber for naps.' Your cofounder is your most unhinged friend.",
+    choice: {
+      prompt: 'Chase it?',
+      options: [
+        { id: 'found', label: 'Quit and found it (win $80k or lose $50k)', effect: { gamble: { win: 80_000, lose: 50_000 } } },
+        { id: 'idea-guy', label: 'Stay an idea guy (-$1k in domain names)', effect: { cash: -1_000 } },
+      ],
+    },
+  },
+  {
+    id: 'second-lottery-mortgage', category: 'money', title: 'Double or Nothing Brain',
+    flavor: 'A voice says: "you could win it all back plus more." The voice has never once been right.',
+    choice: {
+      prompt: 'Listen to the voice?',
+      options: [
+        { id: 'double', label: 'Listen (win 50% / lose 50% of your cash)', effect: { gamblePct: { win: 50, lose: 50 } } },
+        { id: 'ignore', label: 'Ignore the voice (growth)', effect: {} },
+      ],
+    },
+  },
+
+  // =========================================================================
+  // TABLE STAKES (v3.2): players paying players
+  // =========================================================================
+  {
+    id: 'superbowl-squares', category: 'money', title: 'Super Bowl Squares Winner',
+    flavor: 'You had 0-0 and did not watch a single down. Everyone at this table owes you.',
+    effect: { collectFromEach: 3_000 },
+  },
+  {
+    id: 'pyramid-launch', category: 'money', title: 'You Got In Early',
+    flavor: "It's not a pyramid scheme, it's a 'reverse funnel.' Everyone you know is now your downline.",
+    effect: { collectFromEach: 2_000 },
+  },
+  {
+    id: 'trip-treasurer', category: 'money', title: 'The Group Trip Treasurer',
+    flavor: "You held the vacation fund. There were 'administrative fees.' The books are sealed.",
+    effect: { collectFromEach: 2_000 },
+  },
+  {
+    id: 'shots-for-table', category: 'vices', title: 'SHOTS FOR EVERYBODY',
+    flavor: 'You stood on a chair and pointed at each of them individually. There is no walking this back.',
+    effect: { payToEach: 1_500 },
+  },
+  {
+    id: 'intervention', category: 'vices', title: 'The Intervention (Yours)',
+    flavor: 'They staged it for you. There were poster boards. You owe everyone gas money and an apology.',
+    effect: { payToEach: 1_000 },
+  },
+  {
+    id: 'gala-pledge', category: 'news', title: 'Charity Gala Pledge',
+    flavor: 'The paddle went up. Your hand was on the paddle. Everyone saw. Everyone gets a cut of your shame.',
+    effect: { payToEach: 2_000 },
+  },
+  {
+    id: 'backflip-bet', category: 'vices', title: 'The Backflip Bet',
+    flavor: 'You told the entire table you could still do a backflip. The table has money on this.',
+    choice: {
+      prompt: 'Prove it?',
+      options: [
+        { id: 'flip', label: 'Attempt the flip (win $9k / lose $9k + dignity)', effect: { gamble: { win: 9_000, lose: 9_000 } } },
+        { id: 'decline', label: 'Back down (pay everyone the coward tax)', effect: { payToEach: 500 } },
+      ],
+    },
+  },
+  {
+    id: 'estate-sale-frenzy', category: 'money', title: 'You Ran the Estate Sale',
+    flavor: "You sold everyone at this table something 'vintage' from a stranger's garage. No refunds.",
+    effect: { collectFromEach: 1_500 },
+  },
+
+  // =========================================================================
+  // TAX SEASON (v3.2): death and these
+  // =========================================================================
+  {
+    id: 'diy-taxes', category: 'money', title: 'You Did Your Own Taxes',
+    flavor: "How hard could it be? (It could be extremely hard. There's a whole profession.)",
+    choice: {
+      prompt: 'File it yourself?',
+      options: [
+        { id: 'diy', label: 'Free-file at 11:58 PM April 15 (refund $8k or audit -$12k)', effect: { gamble: { win: 8_000, lose: 12_000 } } },
+        { id: 'pro', label: 'Pay the accountant (-$3k, sleep soundly)', effect: { cash: -3_000 } },
+      ],
+    },
+  },
+  {
+    id: '1099-surprise', category: 'money', title: 'The 1099 Surprise',
+    flavor: 'Your side hustle sent a 1099. Nobody withheld anything. NOBODY withheld ANYTHING.',
+    effect: { cash: -8_000 },
+  },
+  {
+    id: 'capital-gains', category: 'money', title: 'Capital Gains Realization',
+    flavor: 'The gains were realized. Then the tax bill was realized. Then you realized several things.',
+    effect: { cashPct: -10 },
+  },
 ]
 
 const byId = new Map(CARDS.map((c) => [c.id, c]))
