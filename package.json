@@ -1,0 +1,27 @@
+{
+  "name": "midlife-crisis",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Midlife Crisis: The Game of Adult Life — a 3D online multiplayer board game (2-6 players)",
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n server,client -c blue,magenta \"npm run dev --workspace server\" \"npm run dev --workspace client\"",
+    "build": "npm run build --workspace client",
+    "start": "npm run start --workspace server",
+    "test": "vitest run",
+    "e2e": "node e2e/smoke.mjs",
+    "typecheck": "tsc --noEmit -p shared && tsc --noEmit -p server && tsc --noEmit -p client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "playwright-core": "^1.61.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0"
+  }
+}
