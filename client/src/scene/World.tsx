@@ -4,7 +4,7 @@ import type { Group } from 'three'
 import { SPACES, mulberry32 } from '@midlife/shared'
 import { labelTexture } from './textTexture'
 
-const SPINNER_POS: [number, number, number] = [16.5, 0, 1.5]
+const SPINNER_POS: [number, number, number] = [21, 0, 2]
 
 function Tree({ pos, pine, s }: { pos: [number, number, number]; pine: boolean; s: number }) {
   return (
@@ -215,7 +215,7 @@ export default function World() {
 
       <Chapel pos={[marriage.pos[0] + 4.5, 0, marriage.pos[2] + 2]} />
       <Casino pos={[casino.pos[0] + 2, 0, casino.pos[2] - 5]} />
-      <LittleHouse pos={[houseStop.pos[0] + 4, 0, houseStop.pos[2] + 3]} />
+      <LittleHouse pos={[houseStop.pos[0] - 4.5, 0, houseStop.pos[2] - 3]} />
       <BeachSpot pos={[retirement.pos[0] - 2.5, retirement.pos[1], retirement.pos[2] - 3.5]} />
 
       <Clouds />

@@ -81,11 +81,16 @@ interface SegmentDef {
   pts: Vec3[]
   types: SpaceType[]
   labels?: Record<number, string>
+  /** BABY spaces delivering more than one peg, by index (the TWINS space). */
+  babies?: Record<number, number>
   collegePool?: boolean
 }
 
 const E: SpaceType = 'EVENT'
 const P: SpaceType = 'PAYDAY'
+
+/** Map scale: v2 board has ~30% more tiles, so the whole map grows with it. */
+const S = 1.3
 
 const SEGMENTS: SegmentDef[] = [
   {
@@ -99,7 +104,7 @@ const SEGMENTS: SegmentDef[] = [
       [-30, 0, 4],
       [-26, 0, 10],
     ],
-    types: [E, E, E, 'STOP_CAREER', E, P, E, E, P, E],
+    types: [E, E, E, 'STOP_CAREER', E, P, E, E, E, P, E, E, P, E, E, P],
     labels: { 3: 'GRADUATION' },
     collegePool: true,
   },
@@ -113,7 +118,7 @@ const SEGMENTS: SegmentDef[] = [
       [-25, 0, 20],
       [-25, 0, 14],
     ],
-    types: [E, 'STOP_CAREER', E, P, E, E, P],
+    types: [E, 'STOP_CAREER', E, P, E, E, P, E, E, P],
     labels: { 1: 'FIRST JOB' },
     collegePool: false,
   },
@@ -129,8 +134,8 @@ const SEGMENTS: SegmentDef[] = [
       [8, 0, 12],
       [10, 0, 6],
     ],
-    types: [E, P, E, E, 'TAX', E, P, E, 'CRASH', E, E, P, E, 'STOP_MARRIAGE'],
-    labels: { 13: 'THE CHAPEL' },
+    types: [E, P, E, E, 'TAX', E, P, E, 'CRASH', E, 'GAMBLE', E, P, E, E, E, P, 'STOP_MARRIAGE'],
+    labels: { 17: 'THE CHAPEL' },
   },
   {
     name: 'mainB',
@@ -141,11 +146,11 @@ const SEGMENTS: SegmentDef[] = [
       [-3, 0, -6],
       [-10, 0, -10],
       [-8, 0, -17],
-      [-1, 0, -20],
-      [7, 0, -19],
+      [-1, 0, -21],
+      [7, 0, -20],
     ],
-    types: [E, E, P, E, 'GAMBLE', E, E, P, E, 'TAX', E, P, E, 'STOP_HOUSE'],
-    labels: { 13: 'OPEN HOUSE' },
+    types: [E, 'BABY', P, E, 'GAMBLE', E, 'LOTTERY', E, P, E, 'TAX', E, P, E, 'CRASH', E, E, P, E, 'STOP_HOUSE'],
+    labels: { 19: 'OPEN HOUSE' },
   },
   {
     name: 'mainC',
@@ -156,20 +161,21 @@ const SEGMENTS: SegmentDef[] = [
       [22, 0, -10],
       [25, 0, -4],
     ],
-    types: [E, P, E, 'CRASH', E, P, E, E, P, E],
-    labels: { 9: 'CROSSROADS' },
+    types: [E, P, E, 'CRASH', E, 'BABY', P, E],
+    labels: { 7: 'CROSSROADS' },
   },
   {
     name: 'risky',
     branch: 'risky',
     pts: [
       [28, 0, -8],
-      [33, 0, -13],
-      [39, 0, -11],
-      [43, 0, -5],
-      [44, 0, 1],
+      [34, 0, -15],
+      [41, 0, -14],
+      [46, 0, -9],
+      [47, 0, -2],
+      [44, 0, 3],
     ],
-    types: ['GAMBLE', E, 'GAMBLE', E, 'CRASH', 'GAMBLE', E, P, 'GAMBLE', E, E],
+    types: ['GAMBLE', E, 'LOTTERY', 'GAMBLE', E, 'CRASH', 'GAMBLE', E, P, 'GAMBLE', 'LOTTERY', E, 'GAMBLE', E, E],
     labels: { 0: 'CASINO STRIP' },
   },
   {
@@ -177,15 +183,16 @@ const SEGMENTS: SegmentDef[] = [
     branch: 'safe',
     pts: [
       [26, 0, 1],
-      [24, 0, 8],
-      [28, 0, 14],
-      [34, 0, 17],
-      [40, 0, 14],
-      [44, 0, 8],
-      [45, 0, 3],
+      [23, 0, 8],
+      [26, 0, 15],
+      [33, 0, 19],
+      [40, 0, 17],
+      [45, 0, 11],
+      [46, 0, 4],
     ],
-    types: [E, P, E, E, P, E, 'TAX', E, P, E, E, P, E, 'CRASH', E],
-    labels: { 0: 'THE SUBURBS' },
+    types: [E, P, E, 'BABY', E, P, 'TAX', E, 'LOTTERY', P, E, 'BABY', E, P, E, 'CRASH', E, P, E, E],
+    labels: { 0: 'THE SUBURBS', 11: 'TWINS!' },
+    babies: { 11: 2 },
   },
   {
     name: 'mainD',
@@ -197,8 +204,8 @@ const SEGMENTS: SegmentDef[] = [
       [33, 2.8, -18],
       [28, 3.5, -22],
     ],
-    types: [E, P, E, E, 'TAX', E, P, E, E, P, E, 'RETIREMENT'],
-    labels: { 11: 'RETIREMENT' },
+    types: [E, P, 'STOP_HOUSE', E, 'TAX', E, P, 'BABY', E, 'CRASH', P, 'RETIREMENT'],
+    labels: { 2: 'REAL ESTATE DAY', 11: 'RETIREMENT' },
   },
 ]
 
@@ -210,7 +217,7 @@ function buildBoard(): { spaces: Space[]; startId: number } {
     id: 0,
     type: 'START',
     next: [],
-    pos: [-47, 0, 24],
+    pos: [-47 * S, 0, 24 * S],
     branch: 'main',
     label: 'START',
   }
@@ -220,7 +227,8 @@ function buildBoard(): { spaces: Space[]; startId: number } {
   const segEnd: Record<string, number> = {}
 
   for (const seg of SEGMENTS) {
-    const positions = samplePath(seg.pts, seg.types.length)
+    const scaled = seg.pts.map(([x, y, z]): Vec3 => [x * S, y, z * S])
+    const positions = samplePath(scaled, seg.types.length)
     const first = spaces.length
     seg.types.forEach((type, i) => {
       const id = spaces.length
@@ -233,6 +241,7 @@ function buildBoard(): { spaces: Space[]; startId: number } {
       }
       if (seg.labels?.[i]) space.label = seg.labels[i]
       if (type === 'STOP_CAREER') space.collegePool = seg.collegePool ?? false
+      if (type === 'BABY' && seg.babies?.[i]) space.babyCount = seg.babies[i]
       spaces.push(space)
     })
     segStart[seg.name] = first

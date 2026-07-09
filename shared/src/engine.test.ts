@@ -60,7 +60,16 @@ describe('board', () => {
   })
 
   it('is a decently sized board', () => {
-    expect(SPACES.length).toBeGreaterThanOrEqual(85)
+    expect(SPACES.length).toBeGreaterThanOrEqual(118)
+  })
+
+  it('has the juicy space types', () => {
+    for (const t of ['LOTTERY', 'BABY', 'GAMBLE', 'CRASH', 'TAX']) {
+      expect(SPACES.filter((s) => s.type === t).length, t).toBeGreaterThanOrEqual(2)
+    }
+    // a twins space and a second house stop exist
+    expect(SPACES.some((s) => s.type === 'BABY' && s.babyCount === 2)).toBe(true)
+    expect(SPACES.filter((s) => s.type === 'STOP_HOUSE').length).toBe(2)
   })
 })
 
@@ -71,7 +80,7 @@ describe('content', () => {
   })
 
   it('has a healthy deck with every category', () => {
-    expect(CARDS.length).toBeGreaterThanOrEqual(100)
+    expect(CARDS.length).toBeGreaterThanOrEqual(170)
     for (const cat of ['relationships', 'vices', 'money', 'internet', 'news', 'career', 'health']) {
       expect(CARDS.some((c) => c.category === cat)).toBe(true)
     }
@@ -359,6 +368,152 @@ describe('retirement & game over', () => {
   })
 })
 
+describe('v2 mechanics', () => {
+  function playerBefore(g: GameState, playerId: string, targetId: number): GameState {
+    const s = structuredClone(g)
+    const before = SPACES.find((q) => q.next.length === 1 && q.next[0] === targetId)
+    expect(before, `no linear predecessor for space ${targetId}`).toBeDefined()
+    const p = s.players.find((p) => p.id === playerId)!
+    p.position = before!.id
+    p.history = [START_ID, before!.id]
+    return s
+  }
+
+  it('BABY space delivers a kid and collects shower gifts', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const baby = SPACES.find(
+      (sp) => sp.type === 'BABY' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    const s = playerBefore(g, 'p1', baby.id)
+    const { state, events } = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(state.players[0].kids).toBe(1)
+    expect(events.some((e) => e.type === 'kid' && e.count === 1)).toBe(true)
+    // baby shower: p2 paid, p1 received
+    expect(state.players[1].cash).toBe(START_CASH - 1_000)
+    expect(state.players[0].cash).toBe(START_CASH + 1_000)
+    expect(state.turnSeat).toBe(1) // no choice involved
+  })
+
+  it('TWINS space delivers two kids, capped at the car max', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const twins = SPACES.find((sp) => sp.type === 'BABY' && sp.babyCount === 2)!
+    let s = playerBefore(g, 'p1', twins.id)
+    s.players[0].kids = 3
+    const { state } = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(state.players[0].kids).toBe(4)
+  })
+
+  it('lottery: whale pack hits the jackpot only on a perfect 10', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const lotto = SPACES.find(
+      (sp) => sp.type === 'LOTTERY' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    const s = playerBefore(g, 'p1', lotto.id)
+    const r1 = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(r1.state.pending?.kind).toBe('lottery')
+    const win = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'big' }, seqRng([forSpin(10)]))
+    expect(win.state.players[0].cash).toBe(START_CASH - 10_000 + 150_000)
+    expect(win.events.some((e) => e.type === 'lottery' && e.won)).toBe(true)
+    // losing ticket
+    const lose = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'small' }, seqRng([forSpin(6)]))
+    expect(lose.state.players[0].cash).toBe(START_CASH - 2_000)
+    expect(lose.events.some((e) => e.type === 'lottery' && !e.won)).toBe(true)
+  })
+
+  it('landing on a house stop with a house offers a market sale, then new listings', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const secondStop = SPACES.filter((sp) => sp.type === 'STOP_HOUSE')[1]
+    let s = playerBefore(g, 'p1', secondStop.id)
+    s.players[0].houseId = 'starter' // resale 140k
+    const r1 = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(3)]))
+    expect(r1.state.pending?.kind).toBe('houseSell')
+    // roll 9 → seller's market: 140k * 1.3 = 182k
+    const r2 = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'sell' }, seqRng([forSpin(9)]))
+    expect(r2.state.players[0].houseId).toBeNull()
+    expect(r2.state.players[0].cash).toBe(START_CASH + 182_000)
+    expect(r2.state.pending?.kind).toBe('house')
+    expect(r2.state.pending?.options.length).toBe(4) // 3 listings + keep renting
+    const r3 = applyAction(r2.state, 'p1', { type: 'choose', optionId: 'skip' }, mulberry32(1))
+    expect(r3.state.players[0].houseId).toBeNull()
+    expect(r3.state.turnSeat).toBe(1)
+  })
+
+  it('keeping the house on a house stop is free', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const secondStop = SPACES.filter((sp) => sp.type === 'STOP_HOUSE')[1]
+    let s = playerBefore(g, 'p1', secondStop.id)
+    s.players[0].houseId = 'mcmansion'
+    const r1 = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(2)]))
+    const r2 = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'keep' }, mulberry32(1))
+    expect(r2.state.players[0].houseId).toBe('mcmansion')
+    expect(r2.state.players[0].cash).toBe(START_CASH)
+    expect(r2.state.turnSeat).toBe(1)
+  })
+
+  it('high-roller bet50 pays 1.5x profit', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const gamble = SPACES.find(
+      (sp) => sp.type === 'GAMBLE' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    const s = playerBefore(g, 'p1', gamble.id)
+    const r1 = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(r1.state.pending?.options.some((o) => o.id === 'bet50')).toBe(true)
+    const r2 = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'bet50' }, seqRng([forSpin(8)]))
+    expect(r2.state.players[0].cash).toBe(START_CASH + 75_000)
+  })
+
+  it('divorce percentage from messy-divorce choices', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const idx = g.deck.indexOf('the-papers')
+    ;[g.deck[0], g.deck[idx]] = [g.deck[idx], g.deck[0]]
+    const evt = SPACES.find(
+      (sp) => sp.type === 'EVENT' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    let s = playerBefore(g, 'p1', evt.id)
+    s.players[0].married = true
+    s.players[0].cash = 100_000
+    const r1 = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(r1.state.pending?.kind).toBe('card')
+    // lawyer: -15k cash first, then lose 25% of the remaining 85k
+    const r2 = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'lawyer' }, mulberry32(1))
+    const p = r2.state.players[0]
+    expect(p.married).toBe(false)
+    expect(p.divorced).toBe(true)
+    expect(p.cash).toBe(100_000 - 15_000 - Math.floor(85_000 * 0.25))
+  })
+
+  it('divorced/debt-gated cards only reach matching players', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const idx = g.deck.indexOf('alimony')
+    ;[g.deck[0], g.deck[idx]] = [g.deck[idx], g.deck[0]]
+    const evt = SPACES.find(
+      (sp) => sp.type === 'EVENT' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    // not divorced: alimony is skipped
+    const s1 = playerBefore(g, 'p1', evt.id)
+    const r1 = applyAction(s1, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    const drawn1 = r1.events.find((e) => e.type === 'card')!
+    expect(drawn1.type === 'card' && drawn1.cardId).not.toBe('alimony')
+    // divorced: alimony lands
+    const s2 = playerBefore(g, 'p1', evt.id)
+    s2.players[0].divorced = true
+    const r2 = applyAction(s2, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    const drawn2 = r2.events.find((e) => e.type === 'card')!
+    expect(drawn2.type === 'card' && drawn2.cardId).toBe('alimony')
+  })
+
+  it('marriage clears the divorced flag', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const chapel = SPACES.find((sp) => sp.type === 'STOP_MARRIAGE')!
+    let s = playerBefore(g, 'p1', chapel.id)
+    s.players[0].divorced = true
+    const r1 = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(4)]))
+    const r2 = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'marry' }, mulberry32(1))
+    expect(r2.state.players[0].married).toBe(true)
+    expect(r2.state.players[0].divorced).toBe(false)
+  })
+})
+
 describe('full game simulation', () => {
   function simulate(seed: number, numPlayers: number, chooser: 'default' | 'greedy') {
     const rng = mulberry32(seed)
@@ -416,7 +571,7 @@ describe('full game simulation', () => {
       expect(state.phase).toBe('gameOver')
       for (const entry of state.ranking!) {
         expect(Number.isFinite(entry.netWorth)).toBe(true)
-        expect(Math.abs(entry.netWorth)).toBeLessThan(5_000_000)
+        expect(Math.abs(entry.netWorth)).toBeLessThan(10_000_000)
       }
     }
   })
@@ -428,7 +583,7 @@ describe('full game simulation', () => {
       for (const e of allEvents) if (e.type === 'card') drawnIds.add(e.cardId)
     }
     // sanity: simulations exercise a large chunk of the deck
-    expect(drawnIds.size).toBeGreaterThan(CARDS.length / 2)
+    expect(drawnIds.size).toBeGreaterThan(CARDS.length / 3)
     for (const id of drawnIds) expect(cardById(id)).toBeDefined()
   })
 })

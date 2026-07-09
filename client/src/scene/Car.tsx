@@ -89,7 +89,8 @@ export default function Car({ player, seat }: { player: PlayerState; seat: numbe
       {KID_SPOTS.slice(0, player.kids).map(([kx, kz], i) => (
         <Peg key={i} x={kx} z={kz} color="#86efac" scale={0.72} />
       ))}
-      <Html position={[0, 2.1, 0]} center distanceFactor={38} occlude={false}>
+      {/* zIndexRange keeps tags under the HUD (z 5) and modals (z 15/20/50) */}
+      <Html position={[0, 2.1, 0]} center distanceFactor={38} occlude={false} zIndexRange={[4, 0]}>
         <div className="car-tag" style={{ borderColor: color }}>
           {player.name}
           {player.retired ? ' 🌴' : ''}

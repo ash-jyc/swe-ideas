@@ -8,6 +8,8 @@ export type SpaceType =
   | 'PAYDAY'
   | 'TAX'
   | 'GAMBLE'
+  | 'LOTTERY'
+  | 'BABY'
   | 'CRASH'
   | 'STOP_CAREER'
   | 'STOP_MARRIAGE'
@@ -34,6 +36,8 @@ export interface Space {
   label?: string
   /** STOP_CAREER: which career pool to draw from. */
   collegePool?: boolean
+  /** BABY spaces: how many pegs arrive (default 1; the TWINS space says 2). */
+  babyCount?: number
   /** Present when next.length > 1. */
   forkOptions?: ForkOption[]
 }
@@ -69,7 +73,16 @@ export type CardCategory =
   | 'career'
   | 'health'
 
-export type CardRequires = 'married' | 'single' | 'kids' | 'career' | 'house' | 'insured'
+export type CardRequires =
+  | 'married'
+  | 'single'
+  | 'kids'
+  | 'career'
+  | 'house'
+  | 'insured'
+  | 'divorced'
+  | 'renter'
+  | 'debt'
 
 export interface CardEffect {
   cash?: number
@@ -83,6 +96,8 @@ export interface CardEffect {
   skipTurn?: boolean
   marry?: boolean
   divorce?: boolean
+  /** % of cash lost when divorce fires (default 50). */
+  divorcePct?: number
   kids?: number
   insurance?: boolean
   loseInsurance?: boolean
@@ -131,6 +146,7 @@ export interface PlayerState {
   careerId: string | null
   houseId: string | null
   married: boolean
+  divorced: boolean
   kids: number
   insured: boolean
   retired: boolean
@@ -143,7 +159,9 @@ export type ChoiceKind =
   | 'career'
   | 'marriage'
   | 'house'
+  | 'houseSell'
   | 'gamble'
+  | 'lottery'
   | 'card'
   | 'insurance'
 
@@ -207,6 +225,7 @@ export type GameEvent =
   | { type: 'house'; playerId: string; houseId: string }
   | { type: 'insurance'; playerId: string }
   | { type: 'gamble'; playerId: string; bet: number; roll: number; won: boolean }
+  | { type: 'lottery'; playerId: string; spend: number; roll: number; won: boolean; prize: number }
   | { type: 'skip'; playerId: string }
   | { type: 'retire'; playerId: string; netWorth: number }
   | { type: 'turn'; playerId: string }

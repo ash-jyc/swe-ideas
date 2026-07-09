@@ -9,6 +9,8 @@ const TILE_COLOR: Record<SpaceType, string> = {
   PAYDAY: '#22c55e',
   TAX: '#64748b',
   GAMBLE: '#c026d3',
+  LOTTERY: '#14b8a6',
+  BABY: '#f472b6',
   CRASH: '#ef4444',
   STOP_CAREER: '#e11d48',
   STOP_MARRIAGE: '#e11d48',
@@ -21,6 +23,8 @@ const TILE_MARK: Partial<Record<SpaceType, string>> = {
   PAYDAY: '$',
   TAX: 'IRS',
   GAMBLE: '777',
+  LOTTERY: 'LOTTO',
+  BABY: 'BABY',
   CRASH: '!',
 }
 

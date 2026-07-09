@@ -25,10 +25,16 @@ export const TAX_AMOUNT = 10_000
 export const CRASH_COST = 15_000
 export const INSURANCE_COST = 5_000
 export const KID_BONUS = 10_000
+export const BABY_GIFT = 1_000
 export const PAYDAY_LANDING_MULT = 1.5
-export const GAMBLE_BETS = [5_000, 20_000]
+export const GAMBLE_BETS = [5_000, 20_000, 50_000]
 export const GAMBLE_WIN_THRESHOLD = 7 // spin 7-10 wins (40%)
 export const GAMBLE_PROFIT_MULT = 1.5 // 2.5x total return
+export const LOTTERY_SMALL = 2_000
+export const LOTTERY_BIG = 10_000
+export const LOTTERY_MULT = 15 // only a rolled 10 wins
+export const HOUSE_SELL_HOT = 1.3 // roll 7+: seller's market
+export const HOUSE_SELL_COLD = 0.75
 export const MAX_KIDS = 4
 
 export type Rng = () => number
@@ -89,6 +95,7 @@ export function initGame(playersIn: NewPlayer[], rng: Rng): GameState {
     careerId: null,
     houseId: null,
     married: false,
+    divorced: false,
     kids: 0,
     insured: false,
     retired: false,
@@ -142,6 +149,17 @@ function roundSalary(n: number): number {
   return Math.max(10_000, Math.round(n / 1000) * 1000)
 }
 
+/** Every other player pays `amount` to p (weddings, baby showers). */
+function collectGifts(s: GameState, ev: GameEvent[], p: PlayerState, amount: number, reason: string) {
+  let total = 0
+  for (const other of s.players) {
+    if (other.id === p.id) continue
+    addCash(s, ev, other, -amount, reason)
+    total += amount
+  }
+  if (total > 0) addCash(s, ev, p, total, reason)
+}
+
 // ---------------------------------------------------------------------------
 // Deck
 // ---------------------------------------------------------------------------
@@ -162,6 +180,12 @@ function matchesRequires(card: EventCard, p: PlayerState): boolean {
       return p.houseId !== null
     case 'insured':
       return p.insured
+    case 'divorced':
+      return p.divorced
+    case 'renter':
+      return p.houseId === null
+    case 'debt':
+      return p.debt > 0
   }
 }
 
@@ -341,9 +365,32 @@ function resolveLanding(s: GameState, ev: GameEvent[], p: PlayerState, rng: Rng)
           { id: 'skip', label: 'Keep walking', detail: 'Your money stays your money. Boring, effective.' },
           { id: 'bet5', label: `Bet ${fmtK(GAMBLE_BETS[0])}`, detail: `Win ${fmtK(GAMBLE_BETS[0] * GAMBLE_PROFIT_MULT)} profit on 7+` },
           { id: 'bet20', label: `Bet ${fmtK(GAMBLE_BETS[1])}`, detail: `Win ${fmtK(GAMBLE_BETS[1] * GAMBLE_PROFIT_MULT)} profit on 7+` },
+          { id: 'bet50', label: `Bet ${fmtK(GAMBLE_BETS[2])} 🔥`, detail: `High roller. Win ${fmtK(GAMBLE_BETS[2] * GAMBLE_PROFIT_MULT)} profit on 7+ — the bank will happily lend you the loss.` },
         ],
       })
       return
+    case 'LOTTERY':
+      setPending(s, ev, {
+        kind: 'lottery',
+        playerId: p.id,
+        prompt: 'Lottery kiosk. Somebody has to win. (Statistically, nobody has to win.)',
+        options: [
+          { id: 'skip', label: 'Keep walking', detail: 'The only winning move.' },
+          { id: 'small', label: `${fmtK(LOTTERY_SMALL)} ticket`, detail: `Roll a perfect 10 to win ${fmtK(LOTTERY_SMALL * LOTTERY_MULT)}.` },
+          { id: 'big', label: `${fmtK(LOTTERY_BIG)} whale pack`, detail: `Roll a perfect 10 to win ${fmtK(LOTTERY_BIG * LOTTERY_MULT)}. This is a cry for help.` },
+        ],
+      })
+      return
+    case 'BABY': {
+      const arriving = Math.min(MAX_KIDS - p.kids, sp.babyCount ?? 1)
+      if (arriving > 0) {
+        p.kids += arriving
+        ev.push({ type: 'kid', playerId: p.id, count: p.kids })
+        collectGifts(s, ev, p, BABY_GIFT, `Baby shower gift for ${p.name}`)
+      }
+      // car already full: nothing happens, which is its own kind of event
+      return
+    }
     case 'CRASH': {
       if (p.insured) {
         ev.push({ type: 'crash', playerId: p.id, covered: true })
@@ -385,7 +432,23 @@ function resolveLanding(s: GameState, ev: GameEvent[], p: PlayerState, rng: Rng)
       return
     }
     case 'STOP_HOUSE': {
-      if (p.houseId) return
+      if (p.houseId) {
+        const h = houseById(p.houseId)
+        setPending(s, ev, {
+          kind: 'houseSell',
+          playerId: p.id,
+          prompt: `Real estate day. An agent eyes ${h.title} and says "in THIS market?"`,
+          options: [
+            { id: 'keep', label: 'Keep the house', detail: 'Equity, sentiment, and that one perfect wall.' },
+            {
+              id: 'sell',
+              label: 'Sell at market price',
+              detail: `Roll 7+: seller's market, ${fmtK(Math.round((h.resale * HOUSE_SELL_HOT) / 1000) * 1000)}. Otherwise: buyer's market, ${fmtK(Math.round((h.resale * HOUSE_SELL_COLD) / 1000) * 1000)}. Then shop again.`,
+            },
+          ],
+        })
+        return
+      }
       const ids = sampleHouses(s, 3, rng)
       setPending(s, ev, {
         kind: 'house',
@@ -482,13 +545,16 @@ function applyEffect(
   }
   if (eff.marry && !p.married) {
     p.married = true
+    p.divorced = false
     ev.push({ type: 'marry', playerId: p.id })
   }
   if (eff.divorce && p.married) {
     p.married = false
+    p.divorced = true
     ev.push({ type: 'divorce', playerId: p.id })
-    if (p.cash > 0) {
-      addCash(s, ev, p, -Math.floor(p.cash / 2), 'Divorce settlement: half of everything')
+    const pct = eff.divorcePct ?? 50
+    if (p.cash > 0 && pct > 0) {
+      addCash(s, ev, p, -Math.floor((p.cash * pct) / 100), `Divorce settlement: ${pct}% of everything`)
     }
   }
   if (eff.kids) {
@@ -580,14 +646,9 @@ function resolveChoice(s: GameState, ev: GameEvent[], p: PlayerState, optionId: 
       if (optionId === 'marry') {
         addCash(s, ev, p, -WEDDING_COST, 'The wedding (open bar, obviously)')
         p.married = true
+        p.divorced = false
         ev.push({ type: 'marry', playerId: p.id })
-        let gifts = 0
-        for (const other of s.players) {
-          if (other.id === p.id) continue
-          addCash(s, ev, other, -WEDDING_GIFT, `Wedding gift for ${p.name}`)
-          gifts += WEDDING_GIFT
-        }
-        if (gifts > 0) addCash(s, ev, p, gifts, 'Wedding gifts')
+        collectGifts(s, ev, p, WEDDING_GIFT, `Wedding gift for ${p.name}`)
       }
       return
     }
@@ -602,7 +663,8 @@ function resolveChoice(s: GameState, ev: GameEvent[], p: PlayerState, optionId: 
     }
     case 'gamble': {
       if (optionId !== 'skip') {
-        const bet = optionId === 'bet5' ? GAMBLE_BETS[0] : GAMBLE_BETS[1]
+        const bet =
+          optionId === 'bet5' ? GAMBLE_BETS[0] : optionId === 'bet20' ? GAMBLE_BETS[1] : GAMBLE_BETS[2]
         const roll = 1 + Math.floor(rng() * 10)
         const won = roll >= GAMBLE_WIN_THRESHOLD
         ev.push({ type: 'gamble', playerId: p.id, bet, roll, won })
@@ -613,6 +675,56 @@ function resolveChoice(s: GameState, ev: GameEvent[], p: PlayerState, optionId: 
           won ? bet * GAMBLE_PROFIT_MULT : -bet,
           won ? 'The house lost, somehow' : 'The house always wins',
         )
+      }
+      return
+    }
+    case 'lottery': {
+      if (optionId !== 'skip') {
+        const spend = optionId === 'small' ? LOTTERY_SMALL : LOTTERY_BIG
+        addCash(s, ev, p, -spend, 'Lottery tickets')
+        const roll = 1 + Math.floor(rng() * 10)
+        const won = roll === 10
+        const prize = spend * LOTTERY_MULT
+        ev.push({ type: 'lottery', playerId: p.id, spend, roll, won, prize })
+        if (won) addCash(s, ev, p, prize, 'LOTTERY JACKPOT')
+      }
+      return
+    }
+    case 'houseSell': {
+      if (optionId === 'sell' && p.houseId) {
+        const h = houseById(p.houseId)
+        const roll = 1 + Math.floor(rng() * 10)
+        const hot = roll >= GAMBLE_WIN_THRESHOLD
+        const price =
+          Math.round((h.resale * (hot ? HOUSE_SELL_HOT : HOUSE_SELL_COLD)) / 1000) * 1000
+        p.houseId = null
+        addCash(
+          s,
+          ev,
+          p,
+          price,
+          hot
+            ? `Sold ${h.title} in a seller's market (rolled ${roll})`
+            : `Sold ${h.title} in a buyer's market (rolled ${roll})`,
+        )
+        // straight back onto the property ladder, if you dare
+        const ids = sampleHouses(s, 3, rng)
+        setPending(s, ev, {
+          kind: 'house',
+          playerId: p.id,
+          prompt: 'The agent "happens to have" three listings on hand.',
+          options: [
+            ...ids.map((id) => {
+              const nh = houseById(id)
+              return {
+                id,
+                label: `${nh.title} — ${fmtK(nh.price)} (resale ${fmtK(nh.resale)})`,
+                detail: nh.flavor,
+              }
+            }),
+            { id: 'skip', label: 'Rent for a while', detail: 'Cash out and float. The landlord rejoices.' },
+          ],
+        })
       }
       return
     }
@@ -713,7 +825,10 @@ export function defaultOptionId(pending: PendingChoice, rng: Rng = Math.random):
     case 'marriage':
     case 'house':
     case 'gamble':
+    case 'lottery':
     case 'insurance':
       return 'skip'
+    case 'houseSell':
+      return 'keep'
   }
 }

@@ -5,7 +5,7 @@ import { trySpin } from '../net/socket'
 import { useStore } from '../state/store'
 import { labelTexture } from './textTexture'
 
-export const SPINNER_POS: [number, number, number] = [16.5, 0, 1.5]
+export const SPINNER_POS: [number, number, number] = [21, 0, 2]
 
 const WEDGES = 10
 const WEDGE_ANGLE = (Math.PI * 2) / WEDGES

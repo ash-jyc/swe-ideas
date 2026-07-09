@@ -24,7 +24,7 @@ export function describeEffect(e: CardEffect | undefined): string[] {
   if (e.move) out.push(e.move > 0 ? `Move ahead ${e.move}` : `Move back ${-e.move}`)
   if (e.skipTurn) out.push('Lose a turn')
   if (e.marry) out.push('Get married 💍')
-  if (e.divorce) out.push('Divorce: lose half your cash 💔')
+  if (e.divorce) out.push(`Divorce: lose ${e.divorcePct ?? 50}% of your cash 💔`)
   if (e.kids) out.push(`+${e.kids} kid${e.kids > 1 ? 's' : ''} 👶`)
   if (e.insurance) out.push('Gain car insurance 🛡️')
   if (e.newCareer) out.push('Forced career change 💼')

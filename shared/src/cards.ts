@@ -723,6 +723,396 @@ export const CARDS: EventCard[] = [
     flavor: 'You woke up and chose momentum. Nothing can stop you today.',
     effect: { move: 3 },
   },
+
+  // =========================================================================
+  // MESSY DIVORCE ARC (v2)
+  // =========================================================================
+  {
+    id: 'the-papers', category: 'relationships', title: 'You Got Served', requires: 'married',
+    flavor: 'At brunch. In front of everyone. The mimosa went warm while you read.',
+    choice: {
+      prompt: 'How messy are we going?',
+      options: [
+        { id: 'lawyer', label: 'Lawyer up (-$15k, keep 75%)', effect: { cash: -15_000, divorce: true, divorcePct: 25 } },
+        { id: 'amicable', label: 'Amicable split (lose half)', effect: { divorce: true, divorcePct: 50 } },
+        { id: 'hide', label: 'Hide assets in crypto (risky)', effect: { divorce: true, divorcePct: 30, gamble: { win: 5_000, lose: 25_000 } } },
+      ],
+    },
+  },
+  {
+    id: 'spouse-podcast', category: 'relationships', title: "Your Ex's New Podcast", requires: 'married',
+    flavor: "Episode 1: 'Everything They Did.' It's charting. You're the content now.",
+    effect: { divorce: true, divorcePct: 55, cash: -3_000 },
+  },
+  {
+    id: 'airfryer-custody', category: 'relationships', title: 'Custody of the Air Fryer', requires: 'married',
+    flavor: 'The house? Fine. The dog? Shared. The air fryer? WAR.',
+    effect: { divorce: true, skipTurn: true },
+  },
+  {
+    id: 'vow-renewal', category: 'relationships', title: 'Vow Renewal', requires: 'married',
+    flavor: 'Second wedding, second registry, second gift grab. Diabolical. Respect.',
+    effect: { cash: -6_000, collectFromEach: 1_000 },
+  },
+  {
+    id: 'marriage-counseling', category: 'relationships', title: 'Marriage Counseling', requires: 'married',
+    flavor: "The therapist asked 'and how does that make you feel?' and your spouse took NOTES.",
+    choice: {
+      prompt: 'Do the work?',
+      options: [
+        { id: 'go', label: 'Go weekly (-$8k, it works)', effect: { cash: -8_000 } },
+        { id: 'fine', label: "Insist you're fine (divorce)", effect: { divorce: true } },
+      ],
+    },
+  },
+
+  // =========================================================================
+  // DIVORCED LIFE (v2)
+  // =========================================================================
+  {
+    id: 'alimony', category: 'relationships', title: 'Alimony Day', requires: 'divorced',
+    flavor: 'The first of the month comes for you like clockwork. Because it is clockwork.',
+    effect: { cash: -5_000 },
+  },
+  {
+    id: 'ex-glow-up', category: 'relationships', title: 'The Ex Glow-Up', requires: 'divorced',
+    flavor: 'They look incredible. You bought a Peloton at 1 AM about it.',
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'same-wedding', category: 'relationships', title: "Both Invited to Dana's Wedding", requires: 'divorced',
+    flavor: 'Same table. Dana did it on purpose. Dana is thriving on this.',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'rebound-remarriage', category: 'relationships', title: 'Chaos Remarriage', requires: 'divorced',
+    flavor: 'You met in the HOA dispute Facebook group. It’s chaos. It’s love. It’s both.',
+    effect: { marry: true, cash: -5_000 },
+  },
+  {
+    id: 'dating-app-relaunch', category: 'relationships', title: 'Profile Relaunch', requires: 'divorced',
+    flavor: "Bio: 'divorced, thriving.' The algorithm knows only one of those is true.",
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'half-the-vinyl', category: 'relationships', title: 'Half the Record Collection', requires: 'divorced',
+    flavor: "Turns out half of 'our' vinyl was collectible. Your half. Sold.",
+    effect: { cash: 6_000 },
+  },
+
+  // =========================================================================
+  // DEBT LIFE (v2)
+  // =========================================================================
+  {
+    id: 'collections-call', category: 'money', title: 'Unknown Number', requires: 'debt',
+    flavor: 'You answered an unknown number. Rookie mistake. They found you.',
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'debt-consolidation', category: 'money', title: 'Consolidation Offer', requires: 'debt',
+    flavor: 'One easy payment! The word "easy" is doing federal-crime levels of work here.',
+    choice: {
+      prompt: 'Deal with it?',
+      options: [
+        { id: 'pay', label: 'Pay $10k now, erase $15k of debt', effect: { cash: -10_000, debt: -15_000 } },
+        { id: 'ignore', label: 'Future you can handle it (+$5k debt)', effect: { debt: 5_000 } },
+      ],
+    },
+  },
+  {
+    id: 'credit-score-drop', category: 'money', title: 'Credit Score Update', requires: 'debt',
+    flavor: 'It dropped so hard the app sent a condolence emoji.',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'budgeting-arc', category: 'money', title: 'Budgeting Video Rabbit Hole', requires: 'debt',
+    flavor: 'You watched 40 finance videos and actually did one (1) thing. It worked.',
+    effect: { debt: -10_000 },
+  },
+
+  // =========================================================================
+  // HOUSING DRAMA (v2)
+  // =========================================================================
+  {
+    id: 'mold-walls', category: 'money', title: 'The Character Was Mold', requires: 'house',
+    flavor: "The 'character' smell? Black mold. The character was load-bearing.",
+    effect: { cash: -8_000 },
+  },
+  {
+    id: 'squatters', category: 'money', title: 'Squatters', requires: 'house',
+    flavor: 'You went on vacation. Someone else went on living in your house.',
+    effect: { cash: -6_000, skipTurn: true },
+  },
+  {
+    id: 'refinance-win', category: 'money', title: 'Refinance Jackpot', requires: 'house',
+    flavor: 'You refinanced at the exact right week. Genius or blind luck — say genius.',
+    effect: { cash: 7_000 },
+  },
+  {
+    id: 'hgtv-brain', category: 'money', title: 'HGTV Brain', requires: 'house',
+    flavor: 'You watched ONE renovation show. The kitchen wall is gone now. It was structural.',
+    effect: { cash: -9_000 },
+  },
+  {
+    id: 'property-reassess', category: 'money', title: 'Property Tax Reassessment', requires: 'house',
+    flavor: 'The county noticed your house exists harder than it used to.',
+    effect: { cash: -4_000 },
+  },
+  {
+    id: 'hoa-coup', category: 'money', title: 'HOA Coup', requires: 'house',
+    flavor: 'You seized power in the HOA. The gazebo WILL be repainted. Petty cash: yours.',
+    effect: { cash: 3_000 },
+  },
+  {
+    id: 'zillow-2am', category: 'money', title: '2 AM Zillow Spiral', requires: 'renter',
+    flavor: 'You browse mansions at 2 AM and feel feelings. The app knows. It sends more.',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'landlord-sells', category: 'money', title: 'New Landlord', requires: 'renter',
+    flavor: "The building sold. 'Minor updates' means your rent, doubled, and a worse gym.",
+    effect: { cash: -5_000 },
+  },
+  {
+    id: 'deposit-back', category: 'money', title: 'Full Deposit Returned', requires: 'renter',
+    flavor: 'A FULL security deposit back. Frame the check. Historians will want it.',
+    effect: { cash: 3_000 },
+  },
+  {
+    id: 'roommate-crypto', category: 'money', title: 'Roommate Paid Rent in Crypto', requires: 'renter',
+    flavor: "Technically he paid. Technically it's gone. Technically you're covering it.",
+    effect: { cash: -4_000 },
+  },
+
+  // =========================================================================
+  // LOTTERY / CASINO / MONEY (v2)
+  // =========================================================================
+  {
+    id: 'scratch-habit', category: 'money', title: 'The Scratch-Off Habit',
+    flavor: "A daily 'little treat' from the gas station. The treats do not scratch back.",
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'office-pool', category: 'money', title: 'Office Pool Hits',
+    flavor: 'The office lottery pool HIT. Twelve ways is still real money. Kevin cried.',
+    effect: { cash: 8_000 },
+  },
+  {
+    id: 'casino-heater', category: 'money', title: 'The Heater',
+    flavor: 'The table was hot and you were hotter. Were. Past tense pending.',
+    effect: { gamble: { win: 15_000, lose: 5_000 } },
+  },
+  {
+    id: 'cold-streak', category: 'money', title: 'The Cold Streak',
+    flavor: "You swore you'd stop at $500 down. You did not stop at $500 down.",
+    effect: { cash: -7_000 },
+  },
+  {
+    id: 'one-more-hand', category: 'money', title: 'One More Hand',
+    flavor: "You're up. The dealer smiles. Everyone at this table has made this mistake.",
+    choice: {
+      prompt: 'Walk or ride?',
+      options: [
+        { id: 'walk', label: 'Walk away up $2k', effect: { cash: 2_000 } },
+        { id: 'stay', label: 'One more hand (double or nothing)', effect: { gamble: { win: 12_000, lose: 12_000 } } },
+      ],
+    },
+  },
+  {
+    id: 'wsb-yolo', category: 'money', title: '0DTE Options',
+    flavor: 'The subreddit said it couldn’t go tits up. The subreddit lied before. Still…',
+    choice: {
+      prompt: 'Deploy the rent money?',
+      options: [
+        { id: 'lurk', label: 'Just lurk', effect: {} },
+        { id: 'yolo', label: 'YOLO (win $25k / lose $20k)', effect: { gamble: { win: 25_000, lose: 20_000 } } },
+      ],
+    },
+  },
+  {
+    id: 'boat-will', category: 'money', title: 'The Boat Dispute',
+    flavor: "Your cousin is contesting the will over a boat. Nobody wanted the boat until now.",
+    effect: { cash: -5_000 },
+  },
+  {
+    id: 'roundup-app', category: 'money', title: 'Round-Up Savings',
+    flavor: 'That app rounding up your coffees quietly saved you a fortune. Delete nothing.',
+    effect: { cash: 4_000 },
+  },
+  {
+    id: 'overdraft-cascade', category: 'money', title: 'Overdraft Cascade',
+    flavor: 'One $6 latte triggered four $35 fees. The bank calls this "a service."',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'goodboi-returns', category: 'money', title: '$GOODBOI Rises Again',
+    flavor: 'It… came back?? SELL. SELL NOW. DO NOT READ THE DISCORD. SELL.',
+    effect: { cash: 10_000 },
+  },
+  {
+    id: 'audit-home-office', category: 'money', title: 'The Audit Letter',
+    flavor: "The IRS has questions about your 'home office' (a couch, legally speaking).",
+    effect: { cash: -6_000 },
+  },
+  {
+    id: 'tax-guy', category: 'money', title: 'The New Tax Guy',
+    flavor: "He found deductions you're choosing not to ask questions about.",
+    effect: { cash: 6_000 },
+  },
+
+  // =========================================================================
+  // KIDS & FAMILY CHAOS (v2)
+  // =========================================================================
+  {
+    id: 'teen-totals-car', category: 'relationships', title: 'The Mailbox Incident', requires: 'kids',
+    flavor: "Your teenager 'barely touched' the mailbox. The mailbox is in the living room.",
+    effect: { cash: -8_000 },
+  },
+  {
+    id: 'kid-viral', category: 'relationships', title: 'Your Kid Went Viral', requires: 'kids',
+    flavor: "Their cereal review has 2M views. You're 'that kid's parent' now. It pays.",
+    effect: { cash: 6_000 },
+  },
+  {
+    id: 'college-tours', category: 'relationships', title: 'College Tour Circuit', requires: 'kids',
+    flavor: 'Six campuses. Six gift shops. Six $60 hoodies you were powerless against.',
+    effect: { cash: -4_000 },
+  },
+  {
+    id: 'daycare-bill', category: 'relationships', title: 'Daycare Invoice', requires: 'kids',
+    flavor: 'Daycare costs more than your first car. Monthly. They nap 40% of the time.',
+    effect: { cash: -6_000 },
+  },
+  {
+    id: 'tooth-fairy', category: 'relationships', title: 'Tooth Fairy Inflation', requires: 'kids',
+    flavor: 'The going rate is $20 a tooth now?? Who negotiated this? The kids have a union?',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'minivan', category: 'relationships', title: 'The Minivan Acceptance', requires: 'kids',
+    flavor: 'You bought the minivan. The sliding door owns you now. It IS convenient.',
+    effect: { cash: -6_000 },
+  },
+  {
+    id: 'bail-cousin', category: 'relationships', title: 'Bail Money. Again.',
+    flavor: "Your cousin needs bail. It's 'a whole misunderstanding.' It is never a misunderstanding.",
+    effect: { cash: -5_000 },
+  },
+  {
+    id: 'family-reunion', category: 'relationships', title: 'You Hosted the Reunion',
+    flavor: "Uncle Randy 'forgot his wallet.' Forty ribs vanished. The cornhole set is broken.",
+    effect: { cash: -3_000 },
+  },
+
+  // =========================================================================
+  // MORE INTERNET / NEWS / VICES / CAREER (v2)
+  // =========================================================================
+  {
+    id: 'parasocial-breakup', category: 'internet', title: 'Parasocial Breakup',
+    flavor: 'Your favorite streamer apologized (ukulele version). You need a personal day.',
+    effect: { skipTurn: true },
+  },
+  {
+    id: 'ai-companion', category: 'internet', title: 'AI Companion Subscription',
+    flavor: "You pay $19/mo for an AI that says you're doing great. Honestly? Working.",
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'group-trip', category: 'internet', title: 'The Group Chat Trip',
+    flavor: "The spreadsheet has 6 tabs. The villa 'sleeps 12' (it sleeps 6).",
+    choice: {
+      prompt: 'Are you in?',
+      options: [
+        { id: 'go', label: 'Book it (-$9k, memories)', effect: { cash: -9_000 } },
+        { id: 'flake', label: 'Flake (-$1k deposit, judged forever)', effect: { cash: -1_000 } },
+      ],
+    },
+  },
+  {
+    id: 'jury-content', category: 'news', title: 'Dismissed From Jury Duty',
+    flavor: 'For making content about jury duty. From the jury box. During the trial.',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'three-day-weekend', category: 'health', title: 'The Perfect Long Weekend',
+    flavor: 'Nothing happened for three days. Nothing. It was perfect. You saved money by being still.',
+    effect: { cash: 2_000 },
+  },
+  {
+    id: 'candle-retreat', category: 'vices', title: 'The "Wellness Retreat"',
+    flavor: 'It was a 4-hour pitch about selling candles to your friends. You bought candles.',
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'dry-wedding', category: 'vices', title: 'A DRY Wedding',
+    flavor: 'You Irish-goodbyed to the hotel bar and made nine new best friends.',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'karaoke-injury', category: 'vices', title: 'Karaoke Injury',
+    flavor: "You gave 'Livin' on a Prayer' everything. Including your hamstring.",
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'errand-paralysis', category: 'health', title: 'Errand Paralysis',
+    flavor: 'Six errands planned. Zero errands done. One $40 "little lunch" happened.',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'phone-slowdown', category: 'internet', title: 'Mysterious Phone Slowdown',
+    flavor: "Your phone got 'slow' the week the new one dropped. Coincidence, surely.",
+    effect: { cash: -5_000 },
+  },
+  {
+    id: 'garage-vintage', category: 'money', title: 'Your Junk Is "Vintage"',
+    flavor: "A teen paid real money for your old band tees and called them 'archival.'",
+    effect: { cash: 4_000 },
+  },
+  {
+    id: 'title-promotion', category: 'career', title: 'Title-Only Promotion', requires: 'career',
+    flavor: 'New title: Senior Lead Principal. New pay: identical. New meetings: eleven.',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'fantasy-revenge', category: 'career', title: 'Fantasy Football Politics', requires: 'career',
+    flavor: "You benched your boss's favorite QB out of spite. The retaliation was swift.",
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'internal-candidate', category: 'career', title: '"We Went Internal"',
+    flavor: 'The job was posted for legal reasons. You interviewed four times for legal reasons.',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'pet-influencer', category: 'internet', title: 'Your Dog Booked a Commercial',
+    flavor: 'Regional dog-food spot. He has a manager now. He has better healthcare than you.',
+    effect: { cash: 5_000 },
+  },
+  {
+    id: 'couples-costume', category: 'relationships', title: 'Costume Contest Champions', requires: 'married',
+    flavor: 'You went as an outlet and a plug. $1,000 and eternal glory.',
+    effect: { cash: 1_000 },
+  },
+  {
+    id: 'situationship-tax', category: 'relationships', title: 'The Situationship Tax', requires: 'single',
+    flavor: "Six 'not-dates' at $80 each with someone who 'doesn't do labels.'",
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'flaky-soulmate', category: 'relationships', title: 'They Rescheduled. Again.', requires: 'single',
+    flavor: "Fourth reschedule. Mercury isn't in retrograde, Taylor. You are.",
+    effect: { skipTurn: true },
+  },
+  {
+    id: 'speed-camera', category: 'news', title: 'The New Speed Camera',
+    flavor: 'It caught you four times before you knew it existed. The city thanks you for the gazebo.',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'hot-sauce-hustle', category: 'money', title: 'Small-Batch Hot Sauce',
+    flavor: "Your garage hot sauce got picked up by two stores. It's called 'Divorced Dad Heat.'",
+    effect: { cash: 5_000 },
+  },
 ]
 
 const byId = new Map(CARDS.map((c) => [c.id, c]))

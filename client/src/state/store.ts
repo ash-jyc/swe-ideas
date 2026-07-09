@@ -267,6 +267,15 @@ async function playEvent(e: GameEvent, state: GameState) {
       })
       await sleep(1500)
       return
+    case 'lottery':
+      if (e.won) {
+        addFx('confetti', carWorldPos(e.playerId))
+        set({ banner: `🎟️ ${nameOf(state, e.playerId)} rolled a PERFECT 10 — JACKPOT ${fmtMoney(e.prize)}!!` })
+      } else {
+        set({ banner: `🎟️ ${nameOf(state, e.playerId)} rolled ${e.roll} — the tickets are decoration now` })
+      }
+      await sleep(1600)
+      return
     case 'skip':
       set({ banner: `😵 ${nameOf(state, e.playerId)} loses a turn` })
       await sleep(1000)

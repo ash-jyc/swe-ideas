@@ -15,15 +15,20 @@ camera that chases whoever is currently ruining their life.
 - **Rooms**: the host creates a room and gets a 4-letter code; friends join from their own
   browsers. No accounts.
 - **Turns**: spin 1–10, your car hops along the board, and the space you land on happens to you.
-- **The board** (~95 spaces): two forks — *College* (debt, fancy careers) vs *Straight to Work*,
+- **The board** (~120 spaces): two forks — *College* (debt, fancy careers) vs *Straight to Work*,
   and later *The Vegas Strip* (gamble-heavy shortcut) vs *The Suburbs* (long and safe).
-  Space types: paydays, event cards, IRS, casino, car crashes, and forced stops (career pick,
-  the chapel, open house day, retirement).
+  Space types: paydays, event cards, IRS, casino tables (bets up to a $50k high-roller line),
+  lottery kiosks (roll a perfect 10 or the tickets are decoration), BABY spaces that add pegs
+  to your car (baby-shower gifts from the whole table), car crashes, and forced stops
+  (career pick, the chapel, open house day, real-estate day, retirement).
 - **The economy**: careers with per-payday salaries, $20k loans that cost $25k at retirement,
-  houses from a *Van Down by the River* to a *McMansion*, weddings that tax the whole table
-  $1k in gifts, divorces that halve your cash.
-- **The deck**: 115+ R-rated adult life events across relationships, vices, money, the
-  internet, current events, career, and health. Some cards are choices; choose poorly.
+  houses from a *Van Down by the River* to a *McMansion* — flippable later at a roll-based
+  market price — weddings that tax the whole table $1k in gifts, and divorces from amicable
+  (half your cash) to scorched-earth (lawyer up, or hide assets in crypto and pray).
+- **The deck**: ~180 R-rated adult life events across relationships, vices, money, the
+  internet, current events, career, and health — including divorced-life, debt-collector,
+  and housing-drama cards that only find players living those lives. Some cards are choices;
+  choose poorly.
 - **Winning**: everyone eventually retires. Highest net worth wins. The kids chip in for the
   nursing home ($10k each). That's the whole scoreboard, just like real life.
 
