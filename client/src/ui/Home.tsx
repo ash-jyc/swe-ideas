@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createRoom, joinRoom, savedName } from '../net/socket'
+
+const FLOATERS = ['💸', '💍', '👶', '🚗', '🎰', '📉', '💔', '🍸', '🏠', '🎓', '🧾', '⚖️', '🎟️', '📱']
 
 export default function Home() {
   const [name, setName] = useState(savedName())
@@ -7,8 +9,31 @@ export default function Home() {
 
   const canPlay = name.trim().length > 0
 
+  const floaters = useMemo(
+    () =>
+      FLOATERS.map((emoji, i) => ({
+        emoji,
+        left: `${(i * 71) % 100}%`,
+        delay: `${(i * 1.7) % 14}s`,
+        duration: `${14 + ((i * 3) % 10)}s`,
+        size: `${22 + ((i * 7) % 22)}px`,
+      })),
+    [],
+  )
+
   return (
     <div className="home">
+      <div className="home-floaters" aria-hidden>
+        {floaters.map((f, i) => (
+          <span
+            key={i}
+            className="floater"
+            style={{ left: f.left, animationDelay: f.delay, animationDuration: f.duration, fontSize: f.size }}
+          >
+            {f.emoji}
+          </span>
+        ))}
+      </div>
       <div className="home-card">
         <h1 className="logo">
           MIDLIFE<span className="logo-accent">CRISIS</span>

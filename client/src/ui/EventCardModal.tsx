@@ -42,7 +42,13 @@ export default function EventCardModal() {
 
   return (
     <div className="card-overlay" onClick={dismiss} data-testid="event-card">
-      <div className="event-card" style={{ borderColor: meta.color }}>
+      <div
+        className="event-card"
+        style={{ borderColor: meta.color, boxShadow: `0 0 70px ${meta.color}44, 0 40px 90px rgba(0,0,0,0.7)` }}
+      >
+        <div className="event-card-watermark" aria-hidden>
+          {meta.emoji}
+        </div>
         <div className="event-card-cat" style={{ color: meta.color }}>
           {meta.emoji} {meta.label.toUpperCase()}
         </div>

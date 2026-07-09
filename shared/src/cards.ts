@@ -1113,6 +1113,268 @@ export const CARDS: EventCard[] = [
     flavor: "Your garage hot sauce got picked up by two stores. It's called 'Divorced Dad Heat.'",
     effect: { cash: 5_000 },
   },
+
+  // =========================================================================
+  // GEN Z ARC (v3): brainrot, delulu, and financially devastating aesthetics
+  // =========================================================================
+  {
+    id: 'girl-math', category: 'money', title: 'Girl Math',
+    flavor: 'It was on sale, you paid cash, and you were going to buy it anyway. Technically you MADE money.',
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'bed-rotting', category: 'health', title: 'Bed Rot Saturday',
+    flavor: 'Fourteen horizontal hours of phone. Restorative? Unclear. Complete? Absolutely.',
+    effect: { skipTurn: true },
+  },
+  {
+    id: 'doom-spending', category: 'money', title: 'Doom Spending',
+    flavor: 'The world is on fire, so you bought a $400 mushroom-shaped lamp. It helps. (It does not help.)',
+    effect: { cash: -4_000 },
+  },
+  {
+    id: 'loud-budgeting', category: 'money', title: 'Loud Budgeting',
+    flavor: "\"I don't want to spend money on that\" — said out loud, to everyone, with your whole chest. Iconic.",
+    effect: { cash: 3_000 },
+  },
+  {
+    id: 'delulu', category: 'internet', title: 'Delulu Is the Solulu',
+    flavor: 'You have decided the promotion is already yours. Manifesting hours are 24/7.',
+    choice: {
+      prompt: 'Stay delulu?',
+      options: [
+        { id: 'delulu', label: 'Full delulu (manifest it: win $10k or reality checks you for $3k)', effect: { gamble: { win: 10_000, lose: 3_000 } } },
+        { id: 'lucid', label: 'Become lucid (nothing happens, boring)', effect: {} },
+      ],
+    },
+  },
+  {
+    id: 'the-ick', category: 'relationships', title: 'The Ick', requires: 'single',
+    flavor: 'They ran after a ping-pong ball. The ick arrived instantly and permanently. Date over.',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'rizz-course', category: 'internet', title: 'The Rizz Course',
+    flavor: "You bought a $200 online rizz masterclass from a man named W_Sigma. It did not work.",
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'brainrot-presentation', category: 'career', title: 'Brainrot Breach', requires: 'career',
+    flavor: "Your vocabulary is 40% brainrot now. The quarterly numbers were, quote, 'so Ohio.' HR called a meeting.",
+    effect: { salaryPct: -5 },
+  },
+  {
+    id: 'labubu-haul', category: 'money', title: 'The Labubu Pipeline',
+    flavor: 'Fourteen blind boxes chasing the secret one. The secret one remains theoretical.',
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'dubai-chocolate', category: 'vices', title: 'Dubai Chocolate Dependency',
+    flavor: "$28 a bar. You've had nine. The pistachio has you and it is not letting go.",
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'tumbler-army', category: 'money', title: 'Emotional Support Tumblers',
+    flavor: 'Hydration is free. Your twelve limited-edition emotional-support tumblers were not.',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'matcha-personality', category: 'vices', title: 'Matcha Is a Personality',
+    flavor: 'The $9 iced matcha with oat milk is no longer a drink. It is who you are.',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'run-club', category: 'relationships', title: 'Run Club', requires: 'single',
+    flavor: "You joined a run club. It's a dating app with cardio. You got faster AND rejected.",
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'npc-stream', category: 'internet', title: 'NPC Streaming Arc',
+    flavor: "'Gang gang. Ice cream so good.' Six hours. Chat tipped generously. Your dignity logged off.",
+    effect: { cash: 7_000 },
+  },
+  {
+    id: 'sephora-tween', category: 'relationships', title: 'The Skincare Tween', requires: 'kids',
+    flavor: "Your ten-year-old requires a $300 retinol routine for their 'skin barrier.' They have the skin of a ten-year-old.",
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'very-demure', category: 'internet', title: 'Very Demure, Very Mindful',
+    flavor: 'Your demure post got licensed for mugs. Very cutesy. Very monetized.',
+    effect: { cash: 4_000 },
+  },
+  {
+    id: 'roman-empire', category: 'internet', title: 'The Roman Empire',
+    flavor: 'How often do you think about the Roman Empire? (You just did. Again.)',
+    effect: {},
+  },
+  {
+    id: 'beige-flags', category: 'relationships', title: 'Beige Flags', requires: 'married',
+    flavor: 'Your spouse has eaten the same lunch for 11 years. Not a red flag. Beige. It haunts you beige-ly.',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'mewing', category: 'health', title: 'The Mewing Year',
+    flavor: "You've been mewing for a year. Nobody noticed the jawline. The chiropractor noticed the neck.",
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'looksmaxxing', category: 'health', title: 'Looksmaxxing Starter Pack',
+    flavor: 'The forum said you need the full stack: red light mask, mouth tape, bone-smashing (do NOT).',
+    choice: {
+      prompt: 'Max the looks?',
+      options: [
+        { id: 'stack', label: 'Buy the full stack (-$6k, confidence roll)', effect: { cash: -6_000, gamble: { win: 8_000, lose: 1_000 } } },
+        { id: 'fine', label: 'You look fine actually (+$1k saved)', effect: { cash: 1_000 } },
+      ],
+    },
+  },
+  {
+    id: 'creatine-shelf', category: 'health', title: 'The Supplement Shelf',
+    flavor: "Creatine, colostrum, 'raw pine pollen.' The shelf costs more than rent. You are eternally 'bulking.'",
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'lazy-girl-job', category: 'career', title: 'Lazy Girl Job Acquired', requires: 'career',
+    flavor: 'Same pay. Four meetings a year. WFH forever. You tell no one how you found it.',
+    effect: { salaryPct: 5 },
+  },
+  {
+    id: 'bare-minimum-monday', category: 'career', title: 'Bare Minimum Monday', requires: 'career',
+    flavor: 'You pioneered Bare Minimum Monday. Your boss pioneered Performance Review Tuesday.',
+    effect: { salaryPct: -5 },
+  },
+  {
+    id: 'ghost-jobs', category: 'career', title: 'The Ghost Job Market',
+    flavor: 'You applied to 200 listings. 180 were fake. The other 20 ghosted you like a bad Hinge date.',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'side-quest', category: 'internet', title: 'Real-Life Side Quest',
+    flavor: 'A stranger gave you $2,000 to help push a piano up a hill, then vanished. Side quest complete.',
+    effect: { cash: 2_000 },
+  },
+  {
+    id: 'airdrop-mod', category: 'internet', title: 'Discord Mod Payday',
+    flavor: "You modded a crypto Discord 'for exposure.' The airdrop actually hit. Exposure: profitable, once.",
+    effect: { cash: 5_000 },
+  },
+  {
+    id: 'prop-bet-brain', category: 'money', title: 'Prop Bet Brain',
+    flavor: "You can no longer watch sports. Only 'lines.' The game tonight has a very juicy total.",
+    choice: {
+      prompt: 'There is no safe option.',
+      options: [
+        { id: 'over', label: 'Hammer the over', effect: { gamble: { win: 8_000, lose: 6_000 } } },
+        { id: 'under', label: 'Hammer the under', effect: { gamble: { win: 8_000, lose: 6_000 } } },
+      ],
+    },
+  },
+  {
+    id: 'buy-the-dip', category: 'money', title: 'Buy the Dip?',
+    flavor: 'It is down 40%. The group chat says "discount." The chart says "knife."',
+    choice: {
+      prompt: 'Catch it?',
+      options: [
+        { id: 'buy', label: 'Buy the dip (win $18k / lose $14k)', effect: { gamble: { win: 18_000, lose: 14_000 } } },
+        { id: 'knife', label: "It's a falling knife (walk away)", effect: {} },
+      ],
+    },
+  },
+  {
+    id: 'festival-presale', category: 'vices', title: 'Festival Presale Panic',
+    flavor: 'The presale queue has 40,000 people. Your card is already out. Your PTO is already imaginary.',
+    choice: {
+      prompt: 'Secure the fit pics?',
+      options: [
+        { id: 'go', label: 'Buy the pass + the outfit (-$5k)', effect: { cash: -5_000 } },
+        { id: 'stream', label: 'Watch the livestream (free, FOMO included)', effect: {} },
+      ],
+    },
+  },
+  {
+    id: 'situationship-anniversary', category: 'relationships', title: 'Six Months of "Hanging Out"', requires: 'single',
+    flavor: 'You celebrated the anniversary of your non-relationship. They got you a keychain. You got them a PS5.',
+    effect: { cash: -4_000 },
+  },
+  {
+    id: 'thrift-flip', category: 'money', title: 'The Thrift Flip',
+    flavor: "A $4 jacket from the bins. A resale kid paid you $300 and whispered 'grail.' You feel powerful.",
+    effect: { cash: 3_000 },
+  },
+  {
+    id: 'aesthetic-rotation', category: 'internet', title: 'The Aesthetic Rotated',
+    flavor: 'Your entire wardrobe is last season\'s core. The new core drops Tuesday. Participation is mandatory.',
+    effect: { cash: -3_000 },
+  },
+  {
+    id: 'finsta-leak', category: 'internet', title: 'The Finsta Leak',
+    flavor: 'Your private story leaked into the family group chat. Grandma has questions. HR has more.',
+    effect: { cash: -4_000 },
+  },
+  {
+    id: 'dumbphone-era', category: 'health', title: 'Dumbphone Era',
+    flavor: 'You bought a flip phone to "touch grass." The peace is real. So is missing everything.',
+    choice: {
+      prompt: 'Log off for real?',
+      options: [
+        { id: 'detox', label: 'Full detox (+$3k saved, lose a turn — you missed the plans)', effect: { cash: 3_000, skipTurn: true } },
+        { id: 'nvm', label: 'Never mind (redownload everything)', effect: {} },
+      ],
+    },
+  },
+  {
+    id: 'doordash-across-street', category: 'vices', title: 'The $31 Burrito',
+    flavor: 'You DoorDashed one burrito from the restaurant physically across the street. Fees included shame.',
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'cabana-decision', category: 'vices', title: 'Vegas Pool Party',
+    flavor: 'The bouncer says the cabana is "the move." The bouncer works on commission.',
+    choice: {
+      prompt: 'How do we suffer?',
+      options: [
+        { id: 'cabana', label: 'Get the cabana (-$8k, main character)', effect: { cash: -8_000 } },
+        { id: 'sunburn', label: 'Free sun, free burn (-$1k in aloe)', effect: { cash: -1_000 } },
+      ],
+    },
+  },
+  {
+    id: 'custom-crocs', category: 'money', title: 'One-of-One Crocs',
+    flavor: "You commissioned $250 custom Crocs. 'Business casual,' you said, to security, at the office.",
+    effect: { cash: -1_000 },
+  },
+  {
+    id: 'sleep-divorce', category: 'relationships', title: 'Sleep Divorce', requires: 'married',
+    flavor: 'Separate rooms, better sleep, thriving marriage, confused in-laws. Science wins again.',
+    effect: { cash: -2_000 },
+  },
+  {
+    id: 'micro-retirement', category: 'career', title: 'Micro-Retirement', requires: 'career',
+    flavor: "You quit for three months to 'live.' It was great. The résumé gap is now load-bearing.",
+    choice: {
+      prompt: 'Take the gap?',
+      options: [
+        { id: 'retire', label: 'Micro-retire (-$8k, lose a turn, no regrets)', effect: { cash: -8_000, skipTurn: true } },
+        { id: 'grind', label: 'Keep grinding (-$1k in stress snacks)', effect: { cash: -1_000 } },
+      ],
+    },
+  },
+  {
+    id: 'stanley-resale', category: 'money', title: 'The Restock Flip',
+    flavor: 'You camped a tumbler restock and flipped four. The girlies paid triple. No notes.',
+    effect: { cash: 3_000 },
+  },
+  {
+    id: 'gamified-savings', category: 'money', title: 'Savings App Streak',
+    flavor: 'You kept a 90-day no-spend streak alive like it was a Tamagotchi. It paid out. Barely. Still counts.',
+    effect: { cash: 2_000 },
+  },
+  {
+    id: 'group-order-martyr', category: 'vices', title: 'The Group Order Martyr',
+    flavor: "You 'covered it for points.' The points: 240. The order: $186. The Venmos: never coming.",
+    effect: { cash: -2_000 },
+  },
 ]
 
 const byId = new Map(CARDS.map((c) => [c.id, c]))

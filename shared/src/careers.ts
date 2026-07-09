@@ -12,6 +12,8 @@ export const CAREERS: Career[] = [
   { id: 'tattoo', title: 'Tattoo Artist', salary: 55_000, college: false, flavor: "Permanent art, temporary boyfriends' names." },
   { id: 'realtor', title: 'Real Estate Agent', salary: 60_000, college: false, flavor: 'Your face is on a bus bench. This is power.' },
   { id: 'plumber', title: 'Plumber', salary: 75_000, college: false, flavor: "AI can't fix a toilet. You win." },
+  { id: 'streamer', title: 'Twitch Streamer', salary: 45_000, college: false, flavor: "'Chat, should I quit my day job?' Chat said yes. Chat was 40 people." },
+  { id: 'sneaker-reseller', title: 'Sneaker Reseller', salary: 40_000, college: false, flavor: 'You camp drops. Your closet is a stock exchange with worse liquidity.' },
 
   // ---- College pool ------------------------------------------------------
   { id: 'tech', title: 'Tech Worker', salary: 105_000, college: true, flavor: "Free snacks, unlimited PTO you're too scared to use." },

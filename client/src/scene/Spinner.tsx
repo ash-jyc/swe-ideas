@@ -1,5 +1,6 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
 import type { Group } from 'three'
 import { trySpin } from '../net/socket'
 import { useStore } from '../state/store'
@@ -28,7 +29,23 @@ export default function Spinner() {
   const wheel = useRef<Group>(null)
   const anim = useRef<SpinAnim>({ spinId: 0, from: 0, to: 0, start: 0 })
 
-  useFrame(() => {
+  const bulbA = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#fbbf24', emissive: '#fbbf24', emissiveIntensity: 1 }),
+    [],
+  )
+  const bulbB = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#f472b6', emissive: '#f472b6', emissiveIntensity: 1 }),
+    [],
+  )
+
+  useFrame(({ clock }) => {
+    // marquee bulbs chase faster while the wheel is mid-spin
+    const t = clock.getElapsedTime()
+    const spinning = performance.now() - anim.current.start < SPIN_MS
+    const speed = spinning ? 14 : 4
+    bulbA.emissiveIntensity = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * speed))
+    bulbB.emissiveIntensity = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * speed + Math.PI))
+
     const w = wheel.current
     if (!w) return
     const sp = useStore.getState().spinner
@@ -61,6 +78,19 @@ export default function Spinner() {
         <cylinderGeometry args={[R + 0.9, R + 1.4, 0.7, 24]} />
         <meshStandardMaterial color="#334155" />
       </mesh>
+      {/* marquee bulbs */}
+      {Array.from({ length: 14 }, (_, i) => {
+        const a = (i / 14) * Math.PI * 2
+        return (
+          <mesh
+            key={i}
+            position={[Math.cos(a) * (R + 0.75), 0.76, Math.sin(a) * (R + 0.75)]}
+            material={i % 2 ? bulbA : bulbB}
+          >
+            <sphereGeometry args={[0.16, 6, 5]} />
+          </mesh>
+        )
+      })}
       {/* wheel */}
       <group ref={wheel} position={[0, 0.85, 0]} onClick={trySpin}>
         {Array.from({ length: WEDGES }, (_, i) => (

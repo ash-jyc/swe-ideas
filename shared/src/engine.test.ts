@@ -134,8 +134,11 @@ describe('movement & forks', () => {
     const r2 = applyAction(r1.state, 'p1', { type: 'choose', optionId: collegeOpt.id }, mulberry32(7))
     const p1 = r2.state.players[0]
     expect(p1.debt).toBe(50_000)
-    // spun 2: fork consumed one step onto the branch, one more step after
-    expect(p1.history).toHaveLength(3)
+    // the fork step lands on the chosen branch's first space
+    // (a drawn card may move the player again afterwards, so assert the move
+    // event rather than the final position)
+    const move = r2.events.find((e) => e.type === 'move')
+    expect(move?.type === 'move' && move.path[0]).toBe(Number(collegeOpt.id))
   })
 
   it('validates turn ownership', () => {

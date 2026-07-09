@@ -19,7 +19,8 @@ function PlayerPanel({ p, isTurn, isMe }: { p: PlayerState; isTurn: boolean; isM
         {p.retired && <span title="retired">🌴</span>}
         {p.skipTurns > 0 && <span title={`skips ${p.skipTurns} turn(s)`}>😵</span>}
       </div>
-      <div className="pp-cash" data-testid={`cash-${p.name}`}>
+      {/* key retriggers the pop animation whenever the number changes */}
+      <div className="pp-cash" data-testid={`cash-${p.name}`} key={p.cash}>
         {money(p.cash)}
       </div>
       <div className="pp-meta">

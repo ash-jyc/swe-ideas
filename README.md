@@ -25,10 +25,11 @@ camera that chases whoever is currently ruining their life.
   houses from a *Van Down by the River* to a *McMansion* — flippable later at a roll-based
   market price — weddings that tax the whole table $1k in gifts, and divorces from amicable
   (half your cash) to scorched-earth (lawyer up, or hide assets in crypto and pray).
-- **The deck**: ~180 R-rated adult life events across relationships, vices, money, the
+- **The deck**: 220+ R-rated adult life events across relationships, vices, money, the
   internet, current events, career, and health — including divorced-life, debt-collector,
-  and housing-drama cards that only find players living those lives. Some cards are choices;
-  choose poorly.
+  and housing-drama cards that only find players living those lives, plus a full Gen Z arc
+  (girl math, bed rotting, delulu manifesting, NPC streaming, the Labubu pipeline). Many
+  cards are choices, and some choices have no safe option. Choose poorly.
 - **Winning**: everyone eventually retires. Highest net worth wins. The kids chip in for the
   nursing home ($10k each). That's the whole scoreboard, just like real life.
 
