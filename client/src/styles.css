@@ -741,6 +741,237 @@ button:disabled {
   color: var(--bad);
 }
 
+/* ---------------------------------------------------------------- spin overlay */
+
+.spin-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(2, 6, 23, 0.62);
+  backdrop-filter: blur(4px);
+  animation: banner-pop 0.25s ease;
+}
+.spin-title {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+}
+.spin-wheel-wrap {
+  position: relative;
+  width: min(78vw, 420px);
+  aspect-ratio: 1;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.spin-wheel-wrap:active {
+  cursor: grabbing;
+}
+.spin-wheel {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+.spin-wheel-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+}
+.spin-wheel-num {
+  font-size: 40px;
+  font-weight: 900;
+  fill: #0f172a;
+  font-family: system-ui, sans-serif;
+}
+.spin-wheel-hub {
+  font-size: 30px;
+}
+.spin-pointer {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 17px solid transparent;
+  border-right: 17px solid transparent;
+  border-top: 30px solid #f8fafc;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+  z-index: 2;
+}
+.spin-landed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 120px;
+  font-weight: 900;
+  color: white;
+  text-shadow:
+    0 0 30px rgba(245, 158, 11, 0.9),
+    0 6px 20px rgba(0, 0, 0, 0.8);
+  animation: cash-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
+  pointer-events: none;
+}
+.spin-hint {
+  min-height: 20px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+.spin-footer {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---------------------------------------------------------------- minigames */
+
+.mg-overlay {
+  z-index: 22;
+}
+.mg-panel {
+  width: min(480px, 92vw);
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border: 2px solid var(--accent-2);
+  border-radius: 20px;
+  padding: 24px 22px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 0 70px rgba(236, 72, 153, 0.3), 0 40px 90px rgba(0, 0, 0, 0.7);
+  animation: card-reveal 0.4s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.mg-kicker {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: var(--accent-2);
+}
+.mg-title {
+  font-size: 24px;
+  font-weight: 900;
+}
+.mg-instructions {
+  color: var(--muted);
+  font-size: 14px;
+}
+.mg-countdown {
+  font-size: 72px;
+  font-weight: 900;
+  color: var(--accent);
+  animation: cash-pop 0.4s ease;
+}
+.mg-action {
+  width: 100%;
+  padding: 34px 10px;
+  font-size: 26px;
+  font-weight: 900;
+  border: none;
+  border-radius: 16px;
+  color: #0f172a;
+  background: #cbd5e1;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.mg-armed {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+.mg-go {
+  background: #22c55e;
+  color: #052e16;
+  animation: spin-pulse 0.5s ease-in-out infinite;
+}
+.mg-mash {
+  background: linear-gradient(135deg, var(--accent), #fb923c);
+}
+.mg-stop {
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: white;
+}
+.mg-bar {
+  height: 14px;
+  border-radius: 999px;
+  background: #0f172a;
+  border: 1px solid var(--panel-border);
+  overflow: hidden;
+}
+.mg-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #4ade80);
+  transition: width 0.08s linear;
+}
+.mg-bar-fill.timer {
+  background: #64748b;
+}
+.mg-detail {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.mg-track {
+  position: relative;
+  height: 40px;
+  border-radius: 12px;
+  background: #0f172a;
+  border: 1px solid var(--panel-border);
+  overflow: hidden;
+}
+.mg-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.mg-zone.ok {
+  left: 28%;
+  width: 44%;
+  background: rgba(245, 158, 11, 0.3);
+}
+.mg-zone.great {
+  left: 42%;
+  width: 16%;
+  background: rgba(34, 197, 94, 0.55);
+}
+.mg-marker {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 5px;
+  margin-left: -2.5px;
+  background: white;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+}
+.mg-result {
+  font-size: 34px;
+  font-weight: 900;
+  padding: 14px 0;
+  animation: cash-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+.mg-result.great {
+  color: var(--good);
+}
+.mg-result.ok {
+  color: var(--muted);
+}
+.mg-result.fail {
+  color: var(--bad);
+}
+.mg-incoming {
+  color: var(--accent-2);
+}
+
 /* toasts */
 
 .toasts {
@@ -864,5 +1095,19 @@ button:disabled {
 
   .gameover-panel {
     padding: 22px 18px;
+  }
+
+  .spin-wheel-wrap {
+    width: min(86vw, 360px);
+  }
+  .spin-title {
+    font-size: 16px;
+  }
+  .mg-action {
+    padding: 26px 10px;
+    font-size: 22px;
+  }
+  .mg-title {
+    font-size: 20px;
   }
 }

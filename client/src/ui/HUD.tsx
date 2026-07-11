@@ -1,6 +1,5 @@
 import { careerById, houseById } from '@midlife/shared'
 import type { PlayerState } from '@midlife/shared'
-import { sendAction, trySpin } from '../net/socket'
 import { useStore } from '../state/store'
 import { COLOR_HEX } from '../scene/carColors'
 
@@ -56,7 +55,6 @@ export default function HUD() {
 
   const current = game.players[game.turnSeat]
   const myId = session?.playerId
-  const me = game.players.find((p) => p.id === myId)
   const myTurn = current.id === myId
   const canSpin = myTurn && game.phase === 'awaitSpin' && !animating
 
@@ -82,31 +80,16 @@ export default function HUD() {
       </div>
 
       <div className="hud-bottom">
-        {game.phase !== 'gameOver' &&
-          (canSpin ? (
-            <div className="hud-actions">
-              <button className="btn btn-spin" onClick={trySpin} data-testid="spin-button">
-                SPIN 🎡
-              </button>
-              {me && !me.retired && (
-                <button
-                  className="btn btn-ghost btn-loan"
-                  onClick={() => sendAction({ type: 'loan' })}
-                  title="Get $20k now, owe $25k at retirement"
-                >
-                  🏦 Take a $20k loan
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="hud-wait" data-testid="turn-indicator">
-              {animating
-                ? '…'
-                : game.phase === 'awaitChoice'
-                  ? `${game.players.find((p) => p.id === game.pending?.playerId)?.name ?? '???'} is making life decisions…`
-                  : `Waiting for ${current.name}…`}
-            </div>
-          ))}
+        {/* the SpinOverlay handles the player's own turn; this bar is for waiting */}
+        {game.phase !== 'gameOver' && !canSpin && (
+          <div className="hud-wait" data-testid="turn-indicator">
+            {animating
+              ? '…'
+              : game.phase === 'awaitChoice'
+                ? `${game.players.find((p) => p.id === game.pending?.playerId)?.name ?? '???'} is making life decisions…`
+                : `Waiting for ${current.name}…`}
+          </div>
+        )}
       </div>
     </div>
   )

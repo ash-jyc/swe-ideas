@@ -14,7 +14,12 @@ camera that chases whoever is currently ruining their life.
 
 - **Rooms**: the host creates a room and gets a 4-letter code; friends join from their own
   browsers. No accounts.
-- **Turns**: spin 1–10, your car hops along the board, and the space you land on happens to you.
+- **Turns**: the wheel pops up in your face — grab it and flick (or tap "just spin it for me").
+  The server rolls; the wheel lands on the truth. Your car hops along the board and the space
+  you land on happens to you.
+- **Mini-games**: some life events put your actual hands on trial — catch the phone over the
+  toilet (reflex), assemble the BJÖRKSNÄS wardrobe (button mashing), parallel park between a
+  Cybertruck and a cop (timing). Nail it, survive it, or blow it; your wallet gets the verdict.
 - **The board** (~120 spaces): two forks — *College* (debt, fancy careers) vs *Straight to Work*,
   and later *The Vegas Strip* (gamble-heavy shortcut) vs *The Suburbs* (long and safe).
   Space types: paydays, event cards, IRS, casino tables (bets up to a $50k high-roller line),

@@ -119,6 +119,15 @@ export interface CardChoiceOption {
   effect: CardEffect
 }
 
+export type MinigameId = 'reflex' | 'mash' | 'timing'
+export type MinigameTier = 'great' | 'ok' | 'fail'
+
+export interface CardMinigame {
+  game: MinigameId
+  instructions: string
+  tiers: Record<MinigameTier, CardEffect>
+}
+
 export interface EventCard {
   id: string
   category: CardCategory
@@ -127,6 +136,8 @@ export interface EventCard {
   requires?: CardRequires
   effect?: CardEffect
   choice?: { prompt: string; options: CardChoiceOption[] }
+  /** A playable mini-game decides which tier effect applies. */
+  minigame?: CardMinigame
 }
 
 // ---------------------------------------------------------------------------
@@ -168,6 +179,7 @@ export type ChoiceKind =
   | 'lottery'
   | 'card'
   | 'insurance'
+  | 'minigame'
 
 export interface ChoiceOption {
   id: string
@@ -183,6 +195,8 @@ export interface PendingChoice {
   /** fork: steps remaining after the fork space. */
   remaining?: number
   cardId?: string
+  /** minigame: what the acting player's client should run. */
+  minigame?: { game: MinigameId; title: string; instructions: string }
 }
 
 export type GamePhase = 'awaitSpin' | 'awaitChoice' | 'gameOver'

@@ -1518,6 +1518,88 @@ export const CARDS: EventCard[] = [
     flavor: 'The gains were realized. Then the tax bill was realized. Then you realized several things.',
     effect: { cashPct: -10 },
   },
+
+  // =========================================================================
+  // MINI-GAMES (v4): your actual hands decide your fate
+  // =========================================================================
+  {
+    id: 'phone-toilet', category: 'internet', title: 'Phone Over the Toilet',
+    flavor: "It's happening in slow motion. Your entire digital life, arcing toward the bowl.",
+    minigame: {
+      game: 'reflex',
+      instructions: 'Tap the very instant it says CATCH!',
+      tiers: {
+        great: { cash: 2_000 },
+        ok: { cash: -2_000 },
+        fail: { cash: -8_000 },
+      },
+    },
+  },
+  {
+    id: 'cat-vase', category: 'health', title: 'The Cat vs. The Heirloom Vase',
+    flavor: 'The cat is making direct eye contact. Its paw is already in motion. It has chosen violence.',
+    minigame: {
+      game: 'reflex',
+      instructions: 'Tap the instant it says CATCH!',
+      tiers: {
+        great: { cash: 3_000 },
+        ok: { cash: -1_000 },
+        fail: { cash: -5_000 },
+      },
+    },
+  },
+  {
+    id: 'bjorksnas', category: 'health', title: 'The BJÖRKSNÄS Wardrobe',
+    flavor: "211 steps. One Allen key. A bag of screws labeled 'extra?? maybe'.",
+    minigame: {
+      game: 'mash',
+      instructions: 'MASH to assemble it before your will to live runs out!',
+      tiers: {
+        great: { cash: 3_000 },
+        ok: {},
+        fail: { cash: -4_000 },
+      },
+    },
+  },
+  {
+    id: 'blizzard-driveway', category: 'health', title: 'The Driveway After the Blizzard',
+    flavor: 'Fourteen inches overnight. The plow guy "has a list." Your shovel awaits.',
+    minigame: {
+      game: 'mash',
+      instructions: 'MASH to shovel before the school run!',
+      tiers: {
+        great: { cash: 2_500 },
+        ok: {},
+        fail: { cash: -3_000, skipTurn: true },
+      },
+    },
+  },
+  {
+    id: 'street-parking', category: 'money', title: 'Street Parking Only',
+    flavor: "One spot left. It's between a Cybertruck and a police cruiser. Everyone at the café is watching.",
+    minigame: {
+      game: 'timing',
+      instructions: 'Tap to stop the marker in the green zone!',
+      tiers: {
+        great: { cash: 2_000 },
+        ok: { cash: -1_000 },
+        fail: { cash: -6_000 },
+      },
+    },
+  },
+  {
+    id: 'espresso-ritual', category: 'vices', title: 'The Home Espresso Ritual',
+    flavor: 'A $1,400 machine. Nineteen variables. God — and the group chat — is watching.',
+    minigame: {
+      game: 'timing',
+      instructions: 'Tap to stop the marker in the green — dial in the shot!',
+      tiers: {
+        great: { cash: 1_000 },
+        ok: {},
+        fail: { cash: -2_000 },
+      },
+    },
+  },
 ]
 
 const byId = new Map(CARDS.map((c) => [c.id, c]))

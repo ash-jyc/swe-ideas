@@ -86,9 +86,19 @@ describe('content', () => {
     }
   })
 
-  it('every card has an effect or a choice', () => {
+  it('every card has an effect, a choice, or a minigame', () => {
     for (const c of CARDS) {
-      expect(c.effect !== undefined || c.choice !== undefined, c.id).toBe(true)
+      expect(c.effect !== undefined || c.choice !== undefined || c.minigame !== undefined, c.id).toBe(true)
+    }
+  })
+
+  it('minigame cards define all three tiers', () => {
+    const mg = CARDS.filter((c) => c.minigame)
+    expect(mg.length).toBeGreaterThanOrEqual(6)
+    for (const c of mg) {
+      for (const tier of ['great', 'ok', 'fail'] as const) {
+        expect(c.minigame!.tiers[tier], `${c.id}.${tier}`).toBeDefined()
+      }
     }
   })
 
@@ -561,6 +571,27 @@ describe('v2 mechanics', () => {
     const { state } = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
     expect(state.players[0].cash).toBe(START_CASH + 3_000)
     expect(state.players[1].cash).toBe(START_CASH - 3_000)
+  })
+
+  it('minigame cards open a minigame pending resolved by tier', () => {
+    const g = initGame(PLAYERS, mulberry32(42))
+    const idx = g.deck.indexOf('phone-toilet')
+    ;[g.deck[0], g.deck[idx]] = [g.deck[idx], g.deck[0]]
+    const evt = SPACES.find(
+      (sp) => sp.type === 'EVENT' && SPACES.some((q) => q.next.length === 1 && q.next[0] === sp.id),
+    )!
+    const s = playerBefore(g, 'p1', evt.id)
+    const r1 = applyAction(s, 'p1', { type: 'spin' }, seqRng([forSpin(1)]))
+    expect(r1.state.pending?.kind).toBe('minigame')
+    expect(r1.state.pending?.minigame?.game).toBe('reflex')
+    expect(r1.state.pending?.options.map((o) => o.id)).toEqual(['great', 'ok', 'fail'])
+    expect(defaultOptionId(r1.state.pending!)).toBe('ok')
+    // each tier applies its mapped effect
+    const great = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'great' }, mulberry32(1))
+    expect(great.state.players[0].cash).toBe(START_CASH + 2_000)
+    const fail = applyAction(r1.state, 'p1', { type: 'choose', optionId: 'fail' }, mulberry32(1))
+    expect(fail.state.players[0].cash).toBe(START_CASH - 8_000)
+    expect(fail.state.turnSeat).toBe(1)
   })
 
   it('marriage clears the divorced flag', () => {

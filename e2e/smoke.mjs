@@ -38,12 +38,18 @@ async function newPlayer(browser, name) {
 // bounding-box stability check would otherwise wait forever
 const CLICK = { force: true, timeout: 2_500 }
 
-/** Keep answering: dismiss cards, click spin, pick the first choice option. */
+/** Keep answering: dismiss cards, click spin, play minigames, pick choices. */
 async function actIfPossible(page) {
   const card = page.getByTestId('event-card')
   if (await card.isVisible().catch(() => false)) {
     await card.click(CLICK).catch(() => {})
     return 'card'
+  }
+  // minigames: tapping the big action button progresses all three game types
+  const mg = page.getByTestId('minigame-action')
+  if (await mg.isVisible().catch(() => false)) {
+    await mg.click(CLICK).catch(() => {})
+    return 'minigame'
   }
   const spin = page.getByTestId('spin-button')
   if (await spin.isVisible().catch(() => false)) {

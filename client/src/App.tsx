@@ -4,6 +4,7 @@ import Lobby from './ui/Lobby'
 import HUD from './ui/HUD'
 import EventCardModal from './ui/EventCardModal'
 import ChoiceModal from './ui/ChoiceModal'
+import SpinOverlay from './ui/SpinOverlay'
 import GameOverModal from './ui/GameOverModal'
 import Toasts from './ui/Toasts'
 import GameScene from './scene/GameScene'
@@ -23,6 +24,7 @@ export default function App() {
       <div className="game-root">
         <GameScene />
         <HUD />
+        <SpinOverlay />
         <EventCardModal />
         <ChoiceModal />
         {game.phase === 'gameOver' && !animating && <GameOverModal />}

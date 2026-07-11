@@ -333,7 +333,24 @@ function resolveLanding(s: GameState, ev: GameEvent[], p: PlayerState, rng: Rng)
     case 'EVENT': {
       const card = drawCard(s, p, rng)
       ev.push({ type: 'card', playerId: p.id, cardId: card.id })
-      if (card.choice) {
+      if (card.minigame) {
+        setPending(s, ev, {
+          kind: 'minigame',
+          playerId: p.id,
+          prompt: `🕹 ${card.title}`,
+          cardId: card.id,
+          minigame: {
+            game: card.minigame.game,
+            title: card.title,
+            instructions: card.minigame.instructions,
+          },
+          options: [
+            { id: 'great', label: 'Nailed it' },
+            { id: 'ok', label: 'Survived it' },
+            { id: 'fail', label: 'Blew it' },
+          ],
+        })
+      } else if (card.choice) {
         setPending(s, ev, {
           kind: 'card',
           playerId: p.id,
@@ -761,6 +778,13 @@ function resolveChoice(s: GameState, ev: GameEvent[], p: PlayerState, optionId: 
       applyEffect(s, ev, p, opt.effect, card.title, rng)
       return
     }
+    case 'minigame': {
+      const card = cardById(pending.cardId!)
+      const tier = optionId as 'great' | 'ok' | 'fail'
+      const suffix = tier === 'great' ? 'nailed it' : tier === 'ok' ? 'survived it' : 'blew it'
+      applyEffect(s, ev, p, card.minigame!.tiers[tier], `${card.title} — ${suffix}`, rng)
+      return
+    }
   }
 }
 
@@ -857,5 +881,7 @@ export function defaultOptionId(pending: PendingChoice, rng: Rng = Math.random):
       return 'skip'
     case 'houseSell':
       return 'keep'
+    case 'minigame':
+      return 'ok' // absent players are mediocre at everything, canonically
   }
 }

@@ -59,7 +59,9 @@ export default function EventCardModal() {
         <h2 className="event-card-title">{card.title}</h2>
         <p className="event-card-flavor">{card.flavor}</p>
         <div className="event-card-effects">
-          {card.choice ? (
+          {card.minigame ? (
+            <span className="event-card-effect mg-incoming">🕹 MINI-GAME INCOMING — {card.minigame.instructions}</span>
+          ) : card.choice ? (
             <span className="event-card-effect">A choice is coming…</span>
           ) : (
             describeEffect(card.effect).map((line, i) => (
