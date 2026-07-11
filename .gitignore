@@ -1,6 +1,7 @@
 node_modules/
 dist/
 e2e/screenshot-*.png
+e2e/debug-*.png
 *.log
 .DS_Store
 *.local
