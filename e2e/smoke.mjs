@@ -42,21 +42,22 @@ async function main() {
     log('dashboard loaded');
 
     // 2. Create a project.
-    await page.getByRole('button', { name: '+ New project' }).first().click();
+    await page.getByRole('button', { name: 'New project' }).first().click();
     await page.getByPlaceholder('My awesome app').fill('Smoke Notes');
     await page.getByRole('button', { name: 'Create' }).click();
     await page.waitForURL(/\/p\/.+/, { timeout: 15000 });
     log('project created, workspace open');
 
     // 3. Send a prompt and wait for generation to finish.
-    await page.getByPlaceholder(/build a URL shortener/).fill('a notes app with search');
-    await page.getByRole('button', { name: 'Send' }).click();
+    const box = page.getByPlaceholder(/Describe an app/);
+    await box.fill('a notes app with search');
+    await box.press('Control+Enter');
     // File chips (e.g. "✎ server.js") appear as file-op events stream in.
     await page.waitForSelector('text=server.js', { timeout: 30000 });
     log('generation complete, files present');
 
     // 4. Preview tab: expect a running app in the iframe.
-    await page.getByRole('button', { name: 'Preview' }).click();
+    await page.getByRole('button', { name: 'Preview', exact: true }).click();
     await page.waitForSelector('iframe[title="preview"]', { timeout: 30000 });
     const frame = page.frameLocator('iframe[title="preview"]');
     await frame.getByText('Notes').first().waitFor({ timeout: 30000 });
@@ -70,7 +71,7 @@ async function main() {
 
     // 6. Deploy.
     await page.getByRole('button', { name: /Deploy/ }).first().click();
-    await page.getByRole('button', { name: 'Deploy', exact: true }).click();
+    await page.locator('.modal').getByRole('button', { name: 'Deploy', exact: true }).click();
     await page.waitForSelector('text=Live at', { timeout: 30000 });
     log('deployed to a shareable URL');
 

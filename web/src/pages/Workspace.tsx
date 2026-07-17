@@ -13,13 +13,22 @@ import { PreviewTab } from '../components/tabs/PreviewTab';
 import { CodeTab } from '../components/tabs/CodeTab';
 import { HistoryTab } from '../components/tabs/HistoryTab';
 import { SecurityTab } from '../components/tabs/SecurityTab';
+import type { ComponentType } from 'react';
+import {
+  IconArrowLeft,
+  IconEye,
+  IconCode,
+  IconHistory,
+  IconShield,
+} from '../components/Icons';
 
 type Tab = 'preview' | 'code' | 'history' | 'security';
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'preview', label: 'Preview' },
-  { id: 'code', label: 'Code' },
-  { id: 'history', label: 'History' },
-  { id: 'security', label: 'Security' },
+type IconType = ComponentType<{ size?: number }>;
+const TABS: { id: Tab; label: string; icon: IconType }[] = [
+  { id: 'preview', label: 'Preview', icon: IconEye },
+  { id: 'code', label: 'Code', icon: IconCode },
+  { id: 'history', label: 'History', icon: IconHistory },
+  { id: 'security', label: 'Security', icon: IconShield },
 ];
 
 export function Workspace() {
@@ -104,7 +113,7 @@ export function Workspace() {
       >
         <div className="row" style={{ alignItems: 'center', gap: 12 }}>
           <Link to="/" className="btn btn-sm btn-ghost">
-            ← Projects
+            <IconArrowLeft size={14} /> Projects
           </Link>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600 }}>{project.name}</div>
@@ -145,20 +154,20 @@ export function Workspace() {
 
         <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           <nav
-            className="row"
-            style={{ gap: 2, padding: '8px 12px', borderBottom: '1px solid var(--border)' }}
+            style={{
+              display: 'flex',
+              padding: '10px 12px',
+              borderBottom: '1px solid var(--border)',
+            }}
           >
+            <div className="segmented">
             {TABS.map((t) => (
               <button
                 key={t.id}
-                className={`btn btn-sm ${tab === t.id ? '' : 'btn-ghost'}`}
-                style={
-                  tab === t.id
-                    ? { background: 'var(--bg-3)', borderColor: 'var(--border-strong)' }
-                    : {}
-                }
+                className={tab === t.id ? 'active' : ''}
                 onClick={() => setTab(t.id)}
               >
+                <t.icon size={14} />
                 {t.label}
                 {t.id === 'security' && project.findingCount > 0 && (
                   <span className="chip" style={{ padding: '1px 6px', color: 'var(--sev-high)' }}>
@@ -167,6 +176,7 @@ export function Workspace() {
                 )}
               </button>
             ))}
+            </div>
           </nav>
 
           <div style={{ flex: 1, minHeight: 0 }}>

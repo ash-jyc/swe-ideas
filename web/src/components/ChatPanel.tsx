@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ByokCredentials, GenerateEvent } from '@vibe/shared';
 import { streamGenerate } from '../lib/sse';
 import { api } from '../lib/api';
+import { IconSend, IconSparkle } from './Icons';
 
 interface Msg {
   role: 'user' | 'assistant';
@@ -9,6 +10,13 @@ interface Msg {
   files: { op: 'write' | 'delete'; path: string }[];
   status: 'streaming' | 'done' | 'error';
 }
+
+const SUGGESTIONS = [
+  'A URL shortener with click analytics',
+  'A team todo board with due dates',
+  'A personal expense tracker with charts',
+  'A public guestbook with search',
+];
 
 export function ChatPanel({
   projectId,
@@ -48,9 +56,8 @@ export function ChatPanel({
     scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
   }, [messages]);
 
-  async function send() {
-    const prompt = input.trim();
-    if (!prompt || busy || !credentials) return;
+  async function runPrompt(prompt: string) {
+    if (!prompt.trim() || busy || !credentials) return;
     setInput('');
     setBusy(true);
     setMessages((m) => [
@@ -90,14 +97,47 @@ export function ChatPanel({
     }
   }
 
+  const empty = messages.length === 0;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div ref={scrollRef} style={{ flex: 1, overflow: 'auto', padding: '16px 14px' }}>
-        {messages.length === 0 && (
-          <div className="faint" style={{ fontSize: 13, lineHeight: 1.6, padding: 8 }}>
-            Describe the web app you want to build. The model generates a full-stack app
-            (Express backend + database + frontend). Every prompt, response, and diff is
-            recorded for security research.
+        {empty && (
+          <div>
+            <div
+              style={{
+                display: 'grid',
+                placeItems: 'center',
+                width: 40,
+                height: 40,
+                borderRadius: 11,
+                background: 'var(--accent-soft)',
+                color: 'var(--accent)',
+                marginBottom: 12,
+              }}
+            >
+              <IconSparkle size={20} />
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>
+              Build a full-stack app
+            </div>
+            <div className="muted" style={{ fontSize: 13, lineHeight: 1.6, marginBottom: 16 }}>
+              Describe what you want. The model generates a real Express + database + frontend app —
+              and every prompt, response, and diff is recorded for security research.
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s}
+                  className="suggest"
+                  disabled={!ready}
+                  onClick={() => runPrompt(s)}
+                >
+                  <IconSparkle size={13} />
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         {messages.map((m, i) => (
@@ -117,25 +157,31 @@ export function ChatPanel({
             </button>
           </div>
         )}
-        <textarea
-          className="input mono"
-          rows={3}
-          placeholder="e.g. build a URL shortener with click analytics"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) send();
-          }}
-          disabled={busy || !ready}
-          style={{ fontSize: 13 }}
-        />
-        <div className="spread" style={{ marginTop: 8 }}>
-          <span className="faint" style={{ fontSize: 11 }}>
-            ⌘/Ctrl + Enter to send
-          </span>
-          <button className="btn btn-primary btn-sm" onClick={send} disabled={busy || !ready || !input.trim()}>
-            {busy ? 'Generating…' : 'Send'}
+        <div style={{ position: 'relative' }}>
+          <textarea
+            className="input"
+            rows={3}
+            placeholder="Describe an app, or ask for a change…"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) runPrompt(input);
+            }}
+            disabled={busy || !ready}
+            style={{ fontSize: 13, paddingRight: 44 }}
+          />
+          <button
+            className="btn btn-primary"
+            onClick={() => runPrompt(input)}
+            disabled={busy || !ready || !input.trim()}
+            title="Send (⌘/Ctrl + Enter)"
+            style={{ position: 'absolute', right: 8, bottom: 8, padding: '7px 9px' }}
+          >
+            <IconSend size={15} />
           </button>
+        </div>
+        <div className="faint" style={{ fontSize: 11, marginTop: 7 }}>
+          {busy ? 'Generating…' : '⌘/Ctrl + Enter to send'}
         </div>
       </div>
     </div>
@@ -145,16 +191,32 @@ export function ChatPanel({
 function Bubble({ msg }: { msg: Msg }) {
   const isUser = msg.role === 'user';
   return (
-    <div style={{ marginBottom: 14 }}>
+    <div style={{ marginBottom: 16 }}>
       <div
-        className="faint"
-        style={{ fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          fontSize: 10.5,
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: 5,
+          color: isUser ? 'var(--text-faint)' : 'var(--accent)',
+        }}
       >
+        <span
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            background: isUser ? 'var(--text-faint)' : 'var(--accent)',
+          }}
+        />
         {isUser ? 'You' : 'Vibe'}
       </div>
       <div
         style={{
-          background: isUser ? 'var(--bg-3)' : 'var(--bg-1)',
+          background: isUser ? 'var(--bg-2)' : 'var(--bg-1)',
           border: '1px solid var(--border)',
           borderRadius: 10,
           padding: '10px 12px',
@@ -165,13 +227,23 @@ function Bubble({ msg }: { msg: Msg }) {
           color: msg.status === 'error' ? 'var(--bad)' : 'var(--text)',
         }}
       >
-        {msg.text || (msg.status === 'streaming' ? '▍' : '')}
+        {msg.text ? (
+          msg.text
+        ) : msg.status === 'streaming' ? (
+          <span className="typing">
+            <span />
+            <span />
+            <span />
+          </span>
+        ) : (
+          ''
+        )}
       </div>
       {msg.files.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 7 }}>
           {msg.files.map((f, i) => (
             <span key={i} className="chip mono" style={{ fontSize: 10.5 }}>
-              {f.op === 'delete' ? '🗑' : '✎'} {f.path}
+              {f.op === 'delete' ? '−' : '+'} {f.path}
             </span>
           ))}
         </div>

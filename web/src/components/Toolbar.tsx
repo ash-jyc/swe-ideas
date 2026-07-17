@@ -1,4 +1,11 @@
 import type { RunStatus } from '@vibe/shared';
+import {
+  IconPlay,
+  IconStop,
+  IconGithub,
+  IconDeploy,
+  IconSettings,
+} from './Icons';
 
 export function Toolbar({
   runState,
@@ -21,28 +28,28 @@ export function Toolbar({
 }) {
   return (
     <div className="row" style={{ alignItems: 'center', gap: 8 }}>
-      <span className="chip" title="Preview status">
+      <span className="chip" title="Preview status" style={{ textTransform: 'capitalize' }}>
         <span className={`dot ${runState}`} />
         {runState}
       </span>
       {running ? (
         <button className="btn btn-sm" onClick={onStop}>
-          ■ Stop
+          <IconStop size={13} /> Stop
         </button>
       ) : (
         <button className="btn btn-sm" onClick={onRun}>
-          ▶ Run
+          <IconPlay size={13} /> Run
         </button>
       )}
-      <div style={{ width: 1, height: 20, background: 'var(--border)' }} />
+      <div style={{ width: 1, height: 18, background: 'var(--border)' }} />
+      <button className="btn btn-sm btn-ghost" onClick={onSettings} title="Model settings">
+        <IconSettings size={14} /> {providerLabel}
+      </button>
       <button className="btn btn-sm" onClick={onGithub}>
-        ⭙ GitHub
+        <IconGithub size={14} /> GitHub
       </button>
       <button className="btn btn-sm btn-primary" onClick={onDeploy}>
-        ⬆ Deploy
-      </button>
-      <button className="btn btn-sm btn-ghost" onClick={onSettings} title="Model settings">
-        ⚙ {providerLabel}
+        <IconDeploy size={14} /> Deploy
       </button>
     </div>
   );
