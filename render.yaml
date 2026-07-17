@@ -1,11 +1,21 @@
-# One-click Render.com blueprint (free tier works).
-# New > Blueprint > point it at this repo, or create a Web Service manually
-# with the same build/start commands.
+# One-click Render.com blueprint.
+# New > Blueprint > point it at this repo. A persistent disk keeps the platform
+# database, generated-app workspaces, and deployed sites across restarts.
 services:
   - type: web
-    name: midlife-crisis
-    runtime: node
-    plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm start
-    healthCheckPath: /
+    name: vibe-secure-platform
+    runtime: docker
+    plan: standard
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: PORT
+        value: 3001
+    disk:
+      name: vibe-data
+      mountPath: /var/data
+      sizeGB: 5

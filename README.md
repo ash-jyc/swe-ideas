@@ -1,117 +1,101 @@
-# 🚗 Midlife Crisis — The Game of Adult Life
+# Vibe — Secure Vibe Coding Platform
 
-An online multiplayer (2–6 players) 3D board game: The Game of Life, except it's the version
-nobody warned you about. Marriage, divorce, DUIs, crypto rug pulls, getting cancelled, student
-loans that outlive you, and a casino shortcut you absolutely should not take.
+An AI web-app builder (think Replit / Lovable) **instrumented for security
+research**. You describe an app in natural language; a BYOK model generates a
+full-stack web app (Express backend + SQLite + frontend); you see it running
+live, deploy it with one click, or push it to GitHub. Crucially, **every turn's
+`prompt → raw model response → generated code → diff` chain is recorded**, so
+you can map *which prompts lead a model to introduce which vulnerabilities*.
 
-Console-game presentation in the browser: a winding 3D board, low-poly cars that gain peg
-people as you marry and reproduce, a giant clickable spinner, confetti at the chapel, and a
-camera that chases whoever is currently ruining their life.
+A pluggable security-analysis step attributes findings back to the exact prompt
+that produced the code. The bundled analyzer is a placeholder — drop in your own
+AI agent behind a small interface.
 
-![gameplay](docs/screenshot.png)
+![workspace](docs/screenshot-preview.png)
 
-## How it plays
+## Features
 
-- **Rooms**: the host creates a room and gets a 4-letter code; friends join from their own
-  browsers. No accounts.
-- **Turns**: the wheel pops up in your face — grab it and flick (or tap "just spin it for me").
-  The server rolls; the wheel lands on the truth. Your car hops along the board and the space
-  you land on happens to you.
-- **Mini-games**: some life events put your actual hands on trial — catch the phone over the
-  toilet (reflex), assemble the BJÖRKSNÄS wardrobe (button mashing), parallel park between a
-  Cybertruck and a cop (timing). Nail it, survive it, or blow it; your wallet gets the verdict.
-- **The board** (~120 spaces): two forks — *College* (debt, fancy careers) vs *Straight to Work*,
-  and later *The Vegas Strip* (gamble-heavy shortcut) vs *The Suburbs* (long and safe).
-  Space types: paydays, event cards, IRS, casino tables (bets up to a $50k high-roller line),
-  lottery kiosks (roll a perfect 10 or the tickets are decoration), BABY spaces that add pegs
-  to your car (baby-shower gifts from the whole table), car crashes, and forced stops
-  (career pick, the chapel, open house day, real-estate day, retirement).
-- **The economy**: careers with per-payday salaries, $20k loans that cost $25k at retirement,
-  houses from a *Van Down by the River* to a *McMansion* — flippable later at a roll-based
-  market price — weddings that tax the whole table $1k in gifts, and divorces from amicable
-  (half your cash) to scorched-earth (lawyer up, or hide assets in crypto and pray).
-- **The deck**: 250+ R-rated adult life events across relationships, vices, money, the
-  internet, current events, career, and health — including divorced-life, debt-collector,
-  and housing-drama cards that only find players living those lives, a full Gen Z arc
-  (girl math, bed rotting, delulu manifesting, NPC streaming, the Labubu pipeline), and
-  wealth-scaled disasters (market meltdowns, Ponzi book clubs, an ALL IN casino bet) that
-  make going broke a real possibility. Many cards are choices, and some choices have no
-  safe option. Choose poorly.
-- **Winning**: everyone eventually retires. Highest net worth wins. The kids chip in for the
-  nursing home ($10k each). That's the whole scoreboard, just like real life.
+- **Chat-driven full-stack generation** with streaming responses.
+- **BYOK** — Anthropic, OpenAI, or any OpenAI-compatible endpoint. Keys live in
+  your browser only and are sent per-request; they are never stored server-side.
+- **Research capture** — prompt, full raw response, per-file diffs, full
+  snapshots, model/provider, token usage, and a versioned system prompt, all in
+  SQLite.
+- **Live preview** — the generated app (backend included) runs in a sandboxed
+  child process and is shown in an iframe.
+- **One-click deploy** — publish a live snapshot to a shareable
+  `/(sites)/<slug>/` URL served by the platform. No third-party accounts.
+- **GitHub export** — create a repo and push the project in a single commit with
+  a personal access token.
+- **Pluggable security analysis** — a clean analyzer interface, findings linked
+  to the originating turn, and a Security tab. Ship your own AI analyzer later.
+- **Mock provider** — a scripted, network-free model for trying the platform and
+  running tests without API keys (including a deliberately-vulnerable app).
 
-Disconnected players don't stall the game — after a short grace their turns auto-resolve
-(auto-spin, cautious defaults) until they rejoin; sessions resume from `localStorage`.
-
-## Running it
+## Quick start
 
 ```bash
 npm install
-npm run dev        # server :3001 + Vite client :5173 (open two browsers to test)
+npm run dev      # server on :3001, web on :5173 (Vite proxies to the server)
 ```
 
-Production (single server serves everything):
+Open http://localhost:5173, click the ⚙ settings button, choose **Mock (no API
+key)** → **mock-vulnerable**, create a project, and prompt away. Then switch to
+the **Security** tab and click *Analyze latest turn*.
+
+For real models, pick Anthropic / OpenAI / OpenAI-compatible and paste your key.
+
+### Production (single origin)
 
 ```bash
-npm run build
-npm start          # http://localhost:3001 (respects PORT)
+npm run build    # builds the web UI into web/dist
+npm start        # server serves the UI + API + previews + deployments on :3001
 ```
 
-## Deploying (so friends can join from anywhere)
+## How it works
 
-The whole game is one Node server (HTTP + WebSockets). Deploy it anywhere that runs a
-long-lived Node process, share the URL, and friends join with the 4-letter room code.
-
-**Render (free, easiest)** — this repo ships a `render.yaml` blueprint:
-1. Push the repo to GitHub.
-2. On [render.com](https://render.com): *New → Blueprint*, pick the repo, deploy.
-   (Or *New → Web Service* with build `npm install && npm run build`, start `npm start`.)
-3. Share the `https://….onrender.com` URL.
-
-Free-tier note: the service sleeps after ~15 idle minutes, so the first visitor waits
-~30–60s while it wakes. An in-progress game keeps it awake.
-
-**Railway / Fly.io / any Docker host** — a production `Dockerfile` is included:
-
-```bash
-docker build -t midlife-crisis .
-docker run -p 3001:3001 midlife-crisis
+```
+web (React + Vite)  ──►  server (Express)  ──►  SQLite (better-sqlite3)
+   chat / tabs            LLM orchestration
+                          codegen parse + diff + snapshot
+                          app runner (child processes)
+                          reverse proxy  /run/:id/*  /sites/:slug/*
 ```
 
-On Fly.io: `fly launch` detects the Dockerfile. On Railway: point it at the repo, done.
+Generated apps are materialized to `DATA_DIR/workspaces/<projectId>/` and run as
+child processes on loopback-only ports, reverse-proxied by the platform. They
+resolve their dependencies from a **curated, pre-installed set**
+(`sandbox-runtime`) via a `node_modules` symlink — there is no per-app
+`npm install`.
 
-**Play tonight without deploying** — run it locally and tunnel:
+See [`docs/architecture.md`](docs/architecture.md),
+[`docs/codegen-protocol.md`](docs/codegen-protocol.md), and
+[`docs/security-analyzer.md`](docs/security-analyzer.md).
 
-```bash
-npm run build && npm start
-# in another terminal (pick one):
-cloudflared tunnel --url http://localhost:3001   # free, no account
-npx ngrok http 3001                              # needs a free ngrok account
-```
+## Scripts
 
-Share the generated `https://` URL with your friends.
-
-⚠️ Rooms live in server memory: run **one instance** (no horizontal scaling), and know
-that a server restart/redeploy drops games in progress.
-
-## Development
-
-```bash
-npm test           # engine unit tests (movement, forks, economy, full-game simulations)
-npm run typecheck  # all three workspaces
-npm run e2e        # two-headless-player smoke test (expects `npm run dev` running;
-                   # set CHROMIUM_PATH if Chromium isn't at /opt/pw-browsers/chromium)
-```
-
-## Architecture
-
-TypeScript monorepo (npm workspaces):
-
-| Package | What it is |
+| Script | Purpose |
 | --- | --- |
-| `shared/` | The whole game: board graph + 3D path coords, careers, houses, the event deck, and a pure reducer engine (`applyAction(state, playerId, action, rng) → {state, events}`) |
-| `server/` | Node + Socket.IO. Authoritative: validates every action, runs the engine with a per-room seeded RNG, broadcasts snapshots plus ordered animation events, handles reconnects and auto-resolution |
-| `client/` | Vite + React + react-three-fiber. Renders the board from shared data, replays the server's event list as animations (spinner, tile hops, card reveals, confetti, crash shake), then applies the snapshot |
+| `npm run dev` | Server + Vite dev server with hot reload |
+| `npm run build` | Build the web UI |
+| `npm start` | Run the platform (serves built UI when present) |
+| `npm test` | Unit tests (Vitest) |
+| `npm run e2e` | Headless-browser smoke test (uses the mock provider) |
+| `npm run typecheck` | Typecheck all workspaces |
 
-The server never trusts the client; the client never computes rules. The deck order is
-stripped from snapshots so you can't read your future, no matter how hard you doomscroll.
+## Deploy the platform itself
+
+`Dockerfile` + `render.yaml` are provided. On Render, use **Blueprint** and
+point it at this repo; the persistent disk at `/var/data` keeps the database,
+workspaces, and deployed sites.
+
+## ⚠️ Security / trust model
+
+This runs **untrusted, model-generated code** as child processes. Mitigations
+are in place (loopback-only ports, a secret-free child environment, memory
+caps, idle/lifetime kills), but this is designed as **single-tenant researcher
+tooling** — the Docker container is the trust boundary. **Do not expose it
+publicly** without stronger sandboxing (e.g. gVisor / Firecracker / per-user
+VMs). The codegen prompt deliberately does not steer the model toward secure
+patterns, because observing the vulnerabilities it introduces naturally is the
+entire point.

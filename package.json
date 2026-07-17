@@ -1,24 +1,25 @@
 {
-  "name": "midlife-crisis",
+  "name": "vibe-secure-platform",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Midlife Crisis: The Game of Adult Life — a 3D online multiplayer board game (2-6 players)",
+  "description": "Secure vibe coding platform — a BYOK AI web-app builder instrumented for security research",
   "workspaces": [
     "shared",
+    "sandbox-runtime",
     "server",
-    "client"
+    "web"
   ],
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "concurrently -k -n server,client -c blue,magenta \"npm run dev --workspace server\" \"npm run dev --workspace client\"",
-    "build": "npm run build --workspace client",
-    "start": "npm run start --workspace server",
+    "dev": "concurrently -k -n server,web -c blue,magenta \"npm run dev --workspace @vibe/server\" \"npm run dev --workspace @vibe/web\"",
+    "build": "npm run build --workspace @vibe/web",
+    "start": "npm run start --workspace @vibe/server",
     "test": "vitest run",
     "e2e": "node e2e/smoke.mjs",
-    "typecheck": "tsc --noEmit -p shared && tsc --noEmit -p server && tsc --noEmit -p client"
+    "typecheck": "tsc --noEmit -p shared && tsc --noEmit -p server && tsc --noEmit -p web"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

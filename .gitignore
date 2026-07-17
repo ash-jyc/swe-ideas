@@ -1,5 +1,8 @@
 node_modules/
 dist/
+data/
+web/dist/
+e2e/.debug/
 e2e/screenshot-*.png
 e2e/debug-*.png
 *.log

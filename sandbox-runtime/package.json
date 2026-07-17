@@ -1,0 +1,16 @@
+{
+  "name": "@vibe/sandbox-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The closed set of npm packages that generated apps may use. Installed once at the monorepo root and resolved by generated apps via a node_modules symlink — no per-app npm install.",
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "better-sqlite3": "^11.8.1",
+    "nanoid": "^5.0.9",
+    "zod": "^3.24.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "cookie-parser": "^1.4.7"
+  }
+}
