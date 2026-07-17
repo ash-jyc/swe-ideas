@@ -1,6 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
 import './theme.css';
 import { Dashboard } from './pages/Dashboard';
 import { Workspace } from './pages/Workspace';

@@ -34,14 +34,14 @@ export function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div
               style={{
-                width: 34,
-                height: 34,
-                borderRadius: 9,
-                background: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
-                boxShadow: '0 4px 16px var(--accent-glow)',
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: 'linear-gradient(160deg, var(--accent), var(--accent-2))',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.4)',
               }}
             />
-            <h1 style={{ margin: 0, fontSize: 24, letterSpacing: '-0.02em' }}>Vibe</h1>
+            <h1 style={{ margin: 0, fontSize: 23, fontWeight: 600, letterSpacing: '-0.025em' }}>Vibe</h1>
           </div>
           <p className="muted" style={{ margin: '10px 0 0', fontSize: 14 }}>
             Build full-stack web apps by prompting. Instrumented for security research —
