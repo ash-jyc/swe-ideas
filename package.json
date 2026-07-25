@@ -21,7 +21,7 @@
     "typecheck": "tsc --noEmit -p shared && tsc --noEmit -p server && tsc --noEmit -p client"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0",
+    "concurrently": "^9.2.4",
     "playwright-core": "^1.61.1",
     "tsx": "^4.19.0",
     "typescript": "^5.8.0",
